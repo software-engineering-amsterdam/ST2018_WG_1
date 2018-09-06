@@ -3,14 +3,12 @@ module Lab1 where
 import Data.List
 import Test.QuickCheck
 
-main :: Integer -> Bool
-
 prime :: Integer -> Bool
 prime n = n > 1 && all (\ x -> rem n x /= 0) xs
   where xs = takeWhile (\ y -> y^2 <= n) primes
 
 primes :: [Integer]
-primes = 2 : filter prime [3..] 
+primes = 2 : filter prime [3..]
 
 infix 1 --> 
 
@@ -28,4 +26,6 @@ data Boy = Matthew | Peter | Jack | Arnold | Carl
 
 boys = [Matthew, Peter, Jack, Arnold, Carl]
 
-main = prime
+-- Exercise 1:
+ws :: Integer -> Integer
+ws = \n -> foldr (+) [1..n]
