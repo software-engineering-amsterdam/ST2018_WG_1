@@ -1,7 +1,8 @@
 
 module Lab1 where
 import Data.List
-import Test.QuickCheck    
+import Test.QuickCheck 
+
 
 main = putStrLn "Hello World"
 
@@ -116,12 +117,51 @@ createList :: [Integer]
 createList = take 101 primes
 
 exercise5 :: [Integer] -> Integer
-exercise5 _ = exercise5 createList
+exercise5 [] = exercise5 createList
 exercise5 x 
     | prime (sum x) = sum x
     | not (prime (sum x)) = exercise5 (updateList x)
 
+tes5 = exercise5 []
 
 -- Exersice 6
 
-exercise6 testssss
+exercise6 :: [Integer] -> [Integer]
+exercise6 n
+    | prime ((product n) + 1) = exercise6 (n ++ [nextPrime (last n) +1])
+    | otherwise = n
+
+test6 = exercise6 [2]
+
+-- Exersice 7
+
+evens [x] = [x];    evens (x:xs) = x:odds xs
+odds  [x] = [];      odds (_:xs) =  evens xs
+
+luhnDoubleSub :: Integer -> Integer
+luhnDoubleSub n 
+    | (n*2 > 9) = (n*2 - 9)
+    | otherwise = (n * 2)
+
+digs :: Integral x => x -> [x]
+digs 0 = []
+digs x = digs (x `div` 10) ++ [x `mod` 10]
+
+luhn :: Integer -> Bool
+luhn 0 = True
+luhn n 
+    | ((sum (( map (luhnDoubleSub) (evens listN)) ++ (odds listN)))) `mod` 10 == 0 = True
+    | otherwise = False
+    where listN = (digs n)
+          -- lastN = last listTemp
+          -- listN = init listTemp
+
+
+isAmericanExpress :: Integer -> Bool
+isAmericanExpress n = (((head numberList) == 3) && ((length numberList) == 15)) && (luhn n) where numberList = digs n
+
+isMaster :: Integer -> Bool
+isMaster n = (((head numberList) == 5) && ((length numberList) == 16)) && (luhn n) where numberList = digs n
+
+isVisa :: Integer -> Bool
+isVisa n = (((head numberList) == 4) && (( ((length numberList) == 16) || ((length numberList) == 13) ) || ((length numberList) == 19) ) && (luhn n)) where numberList = digs n
