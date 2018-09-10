@@ -1,6 +1,7 @@
 
 module Lab1 where
 import Data.List
+import Data.Char
 import Test.QuickCheck
 
 prime :: Integer -> Bool
@@ -24,10 +25,7 @@ reversal = read . reverse . show
 nextPrime :: Integer -> Integer
 nextPrime n = if prime n then n else nextPrime (n+1)
 
-data Boy = Matthew | Peter | Jack | Arnold | Carl 
-           deriving (Eq,Show)
 
-boys = [Matthew, Peter, Jack, Arnold, Carl]
 
 -- Exercise 1:
 ws2left :: Integer -> Integer
@@ -119,15 +117,60 @@ ex6 n
 
 
 -- Exercise 7:
-digs :: Integer -> [Integer]
-digs 0 = []
-digs x = x `mod` 10 : digs (x `div` 10)
-
-doubleDigs :: [Integer] -> [Integer]
-doubleDigs l = map (uncurry ($)) (zip (cycle [((*) 1), ((*) 2)]) l)
-
-singleDigs :: [Integer] -> [Integer]
-singleDigs l = map (\x -> if x >= 10 then x-9 else x) l
+data Card = AmericanExpress | Master | Visa
 
 luhn :: Integer -> Bool
-luhn n = (if (sum (singleDigs (doubleDigs (digs n)))) `mod` 10 == 0 then True else False)
+luhn n = luhnSum n `mod` 10 == 0
+    where
+        luhnSum c       = dig $ map digitToInt $ reverse $ show c
+        dig []          = 0
+        dig [x]         = x
+        dig (x:y:xs)    = x + ((2*y) `div` 10) + ((2*y) `mod` 10) + dig xs
+
+goodLength :: Card -> String -> Bool
+goodLength AmericanExpress n    = length n == 15
+goodLength Master n             = length n == 16
+goodLength Visa n               = length n > 0 && length n <= 19
+
+goodPrefix :: Card -> String -> Bool
+goodPrefix AmericanExpress n    = let pre = take 2 n
+                                      in pre == "34" || pre == "37"
+goodPrefix Master n             = let pre = read $ take 6 n
+                                      in elem pre $ [510000..559999] ++ [222100..272099]
+goodPrefix Visa n               = head n == '4'
+
+validCard :: Card -> Integer -> Bool
+validCard c n = all (== True) [goodLength c cn, goodPrefix c cn, luhn n]
+    where cn = show n
+
+isAmericanExpress, isMaster, isVisa :: Integer -> Bool
+isAmericanExpress n = validCard AmericanExpress n
+isMaster n          = validCard Master n
+isVisa n            = validCard Visa n
+
+
+-- Exercise 8:
+-- Someone is guilty if 3 persons say so, because only 2 persons are lying.
+-- The third person is then always telling the truth.
+-- Everyone who accuses the guilty person is honest.
+
+data Boy = Matthew | Peter | Jack | Arnold | Carl 
+           deriving (Eq,Show)
+boys = [Matthew, Peter, Jack, Arnold, Carl]
+
+xor :: Bool -> Bool -> Bool
+xor a b = (a || b) && (not a || not b)
+
+accuses :: Boy -> Boy -> Bool
+accuses Matthew n   = n /= Carl && n /= Matthew
+accuses Peter n     = n == Matthew || n == Jack
+accuses Jack n      = not $ accuses Matthew n || accuses Peter n
+accuses Arnold n    = xor (accuses Matthew n) (accuses Peter n)
+accuses Carl n      = not $ accuses Arnold n
+
+accusers :: Boy -> [Boy]
+accusers x = [i | i <- boys, accuses i x]
+
+guilty, honest :: [Boy]
+guilty = [i | i <- boys, length (accusers i) >= 3]
+honest = concat [accusers x | x <- guilty]
