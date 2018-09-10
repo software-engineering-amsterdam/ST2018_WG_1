@@ -124,4 +124,4 @@ exercise5 x
 
 -- Exersice 6
 
-
+exercise6 testssss
