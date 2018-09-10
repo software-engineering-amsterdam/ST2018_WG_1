@@ -119,3 +119,15 @@ ex6 n
 
 
 -- Exercise 7:
+digs :: Integer -> [Integer]
+digs 0 = []
+digs x = x `mod` 10 : digs (x `div` 10)
+
+doubleDigs :: [Integer] -> [Integer]
+doubleDigs l = map (uncurry ($)) (zip (cycle [((*) 1), ((*) 2)]) l)
+
+singleDigs :: [Integer] -> [Integer]
+singleDigs l = map (\x -> if x >= 10 then x-9 else x) l
+
+luhn :: Integer -> Bool
+luhn n = (if (sum (singleDigs (doubleDigs (digs n)))) `mod` 10 == 0 then True else False)
