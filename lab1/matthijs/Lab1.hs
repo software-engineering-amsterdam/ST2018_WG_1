@@ -115,6 +115,8 @@ p --> q = (not p) || q
 
 test1' = quickCheckResult (\n -> n >= 0 --> f1 n == f2 n)
 
+-- ex 1 (2:00)
+
 sq :: Int -> Int
 sq = \ n -> n*n
 
@@ -134,6 +136,7 @@ f6 = \ n -> sq ((n*(n+1)) `div` 2)
 
 test3 = quickCheckResult (\n -> n >= 0 --> f5 n == f6 n)
 
+-- ex 2 (0:15)
 
 f7, f8 :: Int -> Int
 f7 = \ n -> length [1..n]
@@ -141,6 +144,7 @@ f8 = \ n -> length (subsequences [1..n])
 
 test4 = quickCheckResult (\n -> n>= 1 --> 2^(f7 n) == f8 n)
 
+-- ex 3 (0:15)
 
 perms :: [a] -> [[a]]
 perms [] = [[]]
@@ -157,6 +161,7 @@ fact n = n * fact (n-1)
 
 test5 = quickCheckResult(\n -> n >= 1 --> f9 n == fact n)
 
+-- ex 4 (0:15)
 
 reversal :: Integer -> Integer
 reversal = read . reverse . show
@@ -167,6 +172,7 @@ revprime n = prime n && prime (reversal n)
 revprimes :: [Integer]
 revprimes = 2 : filter revprime [3..10000]
 
+-- ex 5 (0:30)
 
 sumconsecprimes :: Integer
 sumconsecprimes = sumconsecprimes2 primes
@@ -174,6 +180,7 @@ sumconsecprimes = sumconsecprimes2 primes
 sumconsecprimes2 :: [Integer] -> Integer
 sumconsecprimes2 x = if prime $ sum $ take 101 x then sum $ take 101 x else sumconsecprimes2 (drop 1 x)
 
+-- ex 6 (0:30)
 
 conjconsecprimes :: [Integer]
 conjconsecprimes = conjconsecprimes2 2
@@ -181,6 +188,7 @@ conjconsecprimes = conjconsecprimes2 2
 conjconsecprimes2 :: Int -> [Integer]
 conjconsecprimes2 x = if not $ prime $ product (take x primes) + 1 then (take x primes) else conjconsecprimes2 (x+1)
 
+-- ex 7 (0:30)
 
 luhn :: Integer -> Bool
 luhn n = (luhn2 n 0) `mod` 10 == 0
@@ -191,3 +199,38 @@ luhn2 n s = luhn2 (n `div` 100) (s + (n `mod` 10) + luhn3 ((n `div` 10) `mod` 10
 
 luhn3 :: Integer -> Integer
 luhn3 n = if n * 2 > 9 then (n * 2) - 9 else n * 2
+
+numdigits :: Integer -> Integer
+numdigits n = numdigits2 n 0
+
+numdigits2 :: Integer -> Integer -> Integer
+numdigits2 0 y = y
+numdigits2 x y = numdigits2 (x `div` 10) (y + 1)
+
+isAmericanExpress, isMaster, isVisa :: Integer -> Bool
+isAmericanExpress n = (numdigits n == 15) && luhn n && (n `div` 10^13 == 34 || n `div` 10^13 == 37)
+isMaster n = (numdigits n == 16) && luhn n && (((n `div` 10^12 >= 2221) && (n `div` 10^12 <= 2720)) || ((n `div` 10^14 >= 51) && (n `div` 10^14 <= 55)))
+isVisa n = (numdigits n == 16) && luhn n && (n `div` 10^15 == 4)
+
+-- https://en.wikipedia.org/wiki/Payment_card_number
+
+-- ex 8 (0:30) (With help from Remy)
+
+data Boy = Matthew | Peter | Jack | Arnold | Carl
+          deriving (Eq, Show)
+
+boys = [Matthew, Peter, Jack, Arnold, Carl]
+
+accuses :: Boy -> Boy -> Bool
+accuses Matthew n = n /= Carl && n /= Matthew
+accuses Peter n = n == Matthew || n == Jack
+accuses Jack n = not $ accuses Matthew n || accuses Peter n
+accuses Arnold n = (accuses Matthew n || accuses Peter n) && (not (accuses Matthew n) || not (accuses Peter n))
+accuses Carl n = not $ accuses Arnold n
+
+accusers :: Boy -> [Boy]
+accusers n = [i | i <- boys, accuses i n]
+
+guilty, honest :: [Boy]
+guilty = [i | i <- boys, length (accusers i) >= 3]
+honest = concat [accusers x | x <- guilty]
