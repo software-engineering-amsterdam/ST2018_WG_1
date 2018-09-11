@@ -154,14 +154,31 @@ test7d = isMaster 5500000000000004
 test7e = isVisa 4111111111111111
 
 -- Exercise 8
-data Boy = Matthew | Peter | Jack | Arnold | Carl
-           deriving (Eq,Show)
+-- The text and code below is written by Remy van der Vegt.
+-- Someone is guilty if 3 persons say so, because only 2 persons are lying.
+-- The third person is then always telling the truth.
+-- Everyone who accuses the guilty person is honest.
 
-boys = [Matthew, Peter, Jack, Arnold, Carl]
+xor :: Bool -> Bool -> Bool
+xor a b = (a || b) && (not a || not b)
+
+accuses :: Boy -> Boy -> Bool
+accuses Matthew n   = n /= Carl && n /= Matthew
+accuses Peter n     = n == Matthew || n == Jack
+accuses Jack n      = not $ accuses Matthew n || accuses Peter n
+accuses Arnold n    = xor (accuses Matthew n) (accuses Peter n)
+accuses Carl n      = not $ accuses Arnold n
+
+accusers :: Boy -> [Boy]
+accusers x = [i | i <- boys, accuses i x]
+
+guilty, honest :: [Boy]
+guilty = [i | i <- boys, length (accusers i) >= 3]
+honest = concat [accusers x | x <- guilty]
 
 
-
-
+-- It took me about 7 hours to accomplish these exercises, but most of my time
+-- was put in refreshing my haskell skills.
 
 
 
