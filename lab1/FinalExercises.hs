@@ -142,6 +142,10 @@ test6 = conjecturePrime [2]
 
 
 -- Exercise 7:
+-- To test we found a website that generates master, Visa and AmericanExpress numbers.
+-- We tested a couple of these numbers with our system.
+
+
 data Card = AmericanExpress | Master | Visa
 
 luhn :: Integer -> Bool
@@ -173,6 +177,13 @@ isAmericanExpress n = validCard AmericanExpress n
 isMaster n          = validCard Master n
 isVisa n            = validCard Visa n
 
+testVisaTrue = isVisa 4370927066327824
+testAmericanTrue = isAmericanExpress 376091746291801
+testMasterTrue = isMaster 5372841604245809
+
+testVisaFalse = isVisa 376091746291801
+testAmericanFalse = isAmericanExpress 5372841604245809
+testMasterFalse = isMaster 53728416042458012
 
 
 -- Exercise 8:
