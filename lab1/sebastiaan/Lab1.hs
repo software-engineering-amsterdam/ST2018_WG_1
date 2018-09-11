@@ -140,8 +140,10 @@ odds  [x] = [];      odds (_:xs) =  evens xs
 
 luhnDoubleSub :: Integer -> Integer
 luhnDoubleSub n 
-    | (n*2 > 9) = (n*2 - 9)
-    | otherwise = (n * 2)
+    | (multTwo > 9) = (multTwo - 9)
+    | otherwise = multTwo
+    where
+        multTwo = n*2
 
 digs :: Integral x => x -> [x]
 digs 0 = []
@@ -150,12 +152,12 @@ digs x = digs (x `div` 10) ++ [x `mod` 10]
 luhn :: Integer -> Bool
 luhn 0 = True
 luhn n 
-    | ((sum (( map (luhnDoubleSub) (evens listN)) ++ (odds listN)))) `mod` 10 == 0 = True
+    | ((sum ( map (luhnDoubleSub) (odds listN)) + (sum (evens listN)))) `mod` 10 == 0 = True
     | otherwise = False
     where listN = (digs n)
-          -- lastN = last listTemp
-          -- listN = init listTemp
 
+test :: Integer -> Integer
+test n = ((sum ( map (luhnDoubleSub) (odds (digs n) )) + (sum (evens (digs n) )))) `mod` 10
 
 isAmericanExpress :: Integer -> Bool
 isAmericanExpress n = (((head numberList) == 3) && ((length numberList) == 15)) && (luhn n) where numberList = digs n
