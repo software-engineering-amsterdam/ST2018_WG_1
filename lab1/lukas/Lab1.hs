@@ -114,43 +114,50 @@ conjecturePrime p
 test6 = conjecturePrime [2]
 
 -- Exercise 7
---hoef niet in list kan meteen optellen, div en mod
 luhn :: Integer -> Bool
-luhn n = luhn2 (reversal n) 0 False
+luhn n = luhn2 0 n False
 
 luhn2 :: Integer -> Integer -> Bool -> Bool
-luhn2 0 c t
+luhn2 c 0 t
     | c `mod` 10 == 0 = True
     | otherwise = False
-luhn2 n c t
-    | t = luhn2 (n `div` 10) (c + luhn3 n) False
-    | otherwise = luhn2 (n `div` 10) (c + (n `mod` 10)) True
+luhn2 c n t
+    | t = luhn2 (c + (luhn3 (2*(n `mod` 10)))) (n `div` 10) False
+    | otherwise = luhn2 (c + (n `mod` 10)) (n `div` 10) True
 
 luhn3 :: Integer -> Integer
 luhn3 n
-    | n > 10 = n - 9
+    | n > 9 = n - 9
     | otherwise = n
+
+isAmericanExpress :: Integer -> Bool
+isAmericanExpress n
+    | n > 999999999999999 && luhn n && (n `div` (10^14) == 34 ||
+                                        n `div` (10^14) == 37) = True
+    | otherwise = False
+
+isMaster :: Integer -> Bool
+isMaster n
+    | n > 999999999999999 && luhn n && (elem (n `div` (10^12)) [2221..2720] ||
+                                        elem (n `div` (10^14)) [51..55]) = True
+    | otherwise = False
+
+isVisa :: Integer -> Bool
+isVisa n
+    | n > 999999999999999 && luhn n && (n `div` (10^15)) == 4 = True
+    | otherwise = False
 
 test7a = luhn 79927398713
 test7b = luhn 79927398714
+test7c = isAmericanExpress 3400000000000000
+test7d = isMaster 5500000000000004
+test7e = isVisa 4111111111111111
 
+-- Exercise 8
+data Boy = Matthew | Peter | Jack | Arnold | Carl
+           deriving (Eq,Show)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+boys = [Matthew, Peter, Jack, Arnold, Carl]
 
 
 
