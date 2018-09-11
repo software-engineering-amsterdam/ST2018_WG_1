@@ -122,7 +122,8 @@ test4 = filter (/=0) (map exercise4help [2 .. 10000])
 
 -- Exercise 5
 -- To run do test5
-
+-- This can be tested by looking at a list of primes and check whether the addition of five consecutive primes is a prime.
+-- This is possible because test5 gives us a relatively small number.
 
 sumconsecprimes2 :: [Integer] -> Integer
 sumconsecprimes2 x = if prime $ sum $ take 101 x then sum $ take 101 x else sumconsecprimes2 (drop 1 x)
