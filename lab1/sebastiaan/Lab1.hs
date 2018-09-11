@@ -95,7 +95,7 @@ exercise4help :: Integer -> Integer
 exercise4help n = if(prime n && prime (reversal n)) then n else 0
 
 exercise4 :: [Integer]
-exercise4 = filter (/=0) (map exercise4help [0 .. 9999])
+exercise4 = filter (/=0) (map exercise4help [2 .. 10000])
 
 
 -- Exersice 5
