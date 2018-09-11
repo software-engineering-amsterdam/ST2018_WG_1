@@ -108,6 +108,9 @@ test3 = quickCheckResult(\n -> n >= 1 --> f9 n == fact n)
 
 -- Exercise 4
 -- To run do test4
+-- It is quite hard to confirm this quistion by code,
+-- but if we create a list with all primes lower than 10000 we could find by hand all the reversable primes.
+-- And these can be checked with our implementation below.
 
 exercise4help :: Integer -> Integer
 exercise4help n = if(prime n && prime (reversal n)) then n else 0
