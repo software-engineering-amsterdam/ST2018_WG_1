@@ -168,6 +168,7 @@ add13 x
     | x >= 65 && x <= 90 = x-13
     | x >= 97 && x+13 <= 122 = x+13
     | x >= 97 && x <= 122 = x-13
+    | otherwise = x
 
 -- Exercise 7:
 moveToEnd :: Int -> [Char] -> [Char]
