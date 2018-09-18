@@ -6,7 +6,6 @@ import Data.Char
 import System.Random
 import Test.QuickCheck
 import System.Process
-import System.Random (randomRIO)
 
 infix 1 -->
 
