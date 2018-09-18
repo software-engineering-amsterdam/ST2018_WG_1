@@ -204,7 +204,7 @@ prop5c x y = isDerangement x y == isDerangement y x
 -- a derangement of z and x not equal to z, then x is a derangement of z.
 prop5d :: [Int] -> [Int] -> [Int] -> Bool
 prop5d x y z
-    | isDerangement x y && isDerangement y z && not (isDerangement x z) = False
+    | isDerangement x y && isDerangement y z && not (isDerangement x z) && x /= z = False
     | otherwise = True
 
 test5a = do quickCheck prop5a
