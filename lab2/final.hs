@@ -130,10 +130,15 @@ prop4e :: [Int] -> [Int] -> Bool
 prop4e x y = isPermutation x y == isPermutation y x
 
 test4a = do quickCheck prop4a
+-- +++ OK, passed 100 tests.
 test4b = do quickCheck prop4b
+-- +++ OK, passed 100 tests.
 test4c = do quickCheck prop4c
+-- +++ OK, passed 100 tests.
 test4d = do quickCheck prop4d
+-- +++ OK, passed 100 tests.
 test4e = do quickCheck prop4e
+-- +++ OK, passed 100 tests.
 
 -- Recognizing and generating derangements (1 hour)
 -- Derangement of empty list does not exist.
@@ -173,10 +178,15 @@ prop5e :: [Int] -> [Int] -> Bool
 prop5e x y = isDerangement x y == isDerangement y x
 
 test5a = do quickCheck prop5a
+-- +++ OK, passed 100 tests.
 test5b = do quickCheck prop5b
+-- +++ OK, passed 100 tests.
 test5c = do quickCheck prop5c
+-- +++ OK, passed 100 tests.
 test5d = do quickCheck prop5d
+-- +++ OK, passed 100 tests.
 test5e = do quickCheck prop5e
+-- +++ OK, passed 100 tests.
 
 -- Implementing and testing ROT13 (1 hour)
 add13 :: Int -> Int
