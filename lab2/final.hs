@@ -221,14 +221,51 @@ test5d = do quickCheck prop5d
 -- We also need to check for uppercase and 'a' does not start at 1.
 add13 :: Int -> Int
 add13 x
-    | (x + 13) > (97 + 25) = x + 13 - 26
-    | x < 97 && (x + 13) > (65 + 25) = x + 13 - 26
-    | otherwise = x + 13
+    | x >= 65 && x+13 <= 90 = x+13
+    | x >= 65 && x <= 90 = x-13
+    | x >= 97 && x+13 <= 122 = x+13
+    | x >= 97 && x <= 122 = x-13
+    | otherwise = x
 
 -- This function moves all the letters of a string 13 positions.
 rot13 :: [Char] -> [Char] -> [Char]
 rot13 [] y = y
 rot13 (x:xs) y = rot13 xs (y ++ [chr (add13 (ord x))])
+
+-- A postcondition of rot13 is that it is reversable with the same algorithm.
+-- So, for example, "Hello" becomes "Uryyb", which should become "Hello" again.
+-- If A becomes B, then B becomes A.
+prop6a :: [Char] -> Bool
+prop6a xs = rot13 (rot13 xs []) [] == xs
+
+-- Another property of rot13 is that it only transforms letters.
+-- So it only transforms A-Z en a-z, but not characters like '!' and ':'.
+prop6b :: [Char] -> Bool
+prop6b xs = prop6b2 xs (rot13 xs [])
+
+prop6b2 :: [Char] -> [Char] -> Bool
+prop6b2 [] [] = True
+prop6b2 (x:xs) (y:ys)
+    | ((xi >= 65 && xi <= 90) || (xi >= 97 && xi <= 122)) && ((yi >= 65 && yi <= 90) || (yi >= 97 && yi <= 122)) && abs (xi-yi) == 13 = prop6b2 xs ys
+    | x /= y = False
+    | otherwise = prop6b2 xs ys
+    where
+        xi = ord x
+        yi = ord y
+
+-- Furthermore, the input and output should also be of the same length
+prop6c :: [Char] -> Bool
+prop6c xs = length xs == length ys
+    where
+        ys = rot13 xs []
+
+test6a = do quickCheck prop6a
+-- +++ OK, passed 100 tests.
+test6b = do quickCheck prop6b
+-- +++ OK, passed 100 tests.
+test6c = do quickCheck prop6c
+-- +++ OK, passed 100 tests.
+
 
 -- Implementing and testing IBAN validation (30 min)
 -- This function checks if a string is a valid IBAN. This is done by first
