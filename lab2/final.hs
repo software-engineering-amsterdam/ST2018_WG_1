@@ -1,5 +1,3 @@
--- Name: lukas Koedijk
--- Student ID: 10783687
 
 module Lab2 where
 
@@ -65,24 +63,40 @@ test2c = all (\(x,y,z) -> triangle x y z == Rectangular) (take 100 pythTriples)
 test2d = quickCheckResult (\ (Positive a) -> triangle (2*a) (2*a) ((4*a)-1) == Isosceles)
 
 -- Testing properties strength (30 min)
+forall :: [a] -> (a->Bool) -> Bool
 forall = flip all
+
 stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
 stronger xs p q = forall xs (\ x -> p x --> q x)
 weaker   xs p q = stronger xs q p
 
-p1, p2, p3 :: Int -> Bool
-p1 x = even x && x > 3
-p2 x = even x || x > 3
-p3 x = p1 x || even x
 
-testP :: (Int -> Bool) -> [(Int -> Bool)] -> Integer -> Integer
-testP p [] c = c
-testP p (x:xs) c
-    | stronger [-10..10] p x = testP p xs (c+1)
-    | otherwise = testP p xs c
+f1, f2, f3, f4 :: Int -> Bool
+f1 = (\ x -> (even x && x > 3))
+f2 = (\ x -> even x || x > 3)
+f3 = (\ x -> (even x && x > 3) || even x)
+f4 = (\ x -> even x)
 
-test3 = [testP p1 [p2, p3, even] 0, testP p2 [p1, p3, even] 0,
-        testP p3 [p1, p2, even] 0, testP even [p1, p2, p3] 0]
+mytest = filter (f1) [-10..10]
+mytest2 = filter (f2) [-10..10]
+
+mystronger myf1 myf2 = stronger [-10..10] myf1 myf2
+
+funclist = [f1,f2,f3,f4]
+funcliststring = ["f1", "f2", "f3", "f4"]
+
+
+
+descliststrength :: IO()
+descliststrength = descliststrength2 funclist [] [] funcliststring [] []
+
+descliststrength2 :: [(Int -> Bool)] -> [(Int -> Bool)] -> [(Int -> Bool)] -> [String] -> [String] -> [String] -> IO()
+descliststrength2 (x:y:funclist) m n (xs:ys:funcliststring) ms ns
+| mystronger x y = descliststrength2 (y:funclist) (x:m) n (ys:funcliststring) (xs:ms) ns
+| mystronger y x = descliststrength2 (x:funclist) (y:m) n (xs:funcliststring) (ys:ms) ns
+--if (mystronger x y) then descliststrength (y:funclist) (x:m) n else descliststrength (x:funclist) (y:m) n
+descliststrength2 [x] m n [xs] ms ns = descliststrength2 m [] (x:n) ms [] (xs:ns)
+descliststrength2 [] _ n _ _ ns = print ns
 
 -- Recognizing permutations (1 hour)
 isPermutation :: Eq a => [a] -> [a] -> Bool
