@@ -7,7 +7,7 @@ import System.Random
 import Test.QuickCheck
 import System.Process
 
-infix 1 --> 
+infix 1 -->
 
 (-->) :: Bool -> Bool -> Bool
 p --> q = (not p) || q
@@ -16,10 +16,10 @@ probs :: Int -> IO [Float]
 probs 0 = return []
 probs n = do
              p <- getStdRandom random
-             ps <- probs (n-1) 
+             ps <- probs (n-1)
              return (p:ps)
 
-data Shape = NoTriangle | Equilateral 
+data Shape = NoTriangle | Equilateral
            | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
 -- Red Curry (2.5 hour)
@@ -70,7 +70,7 @@ stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
 stronger xs p q = forall xs (\ x -> p x --> q x)
 weaker   xs p q = stronger xs q p
 
-
+--Properties from workshop 2
 f1, f2, f3, f4 :: Int -> Bool
 f1 = (\ x -> (even x && x > 3))
 f2 = (\ x -> even x || x > 3)
@@ -86,15 +86,14 @@ funclist = [f1,f2,f3,f4]
 funcliststring = ["f1", "f2", "f3", "f4"]
 
 
-
+-- Prints the functions ordered by strength (f1, f4, f3, f2)
 descliststrength :: IO()
 descliststrength = descliststrength2 funclist [] [] funcliststring [] []
 
 descliststrength2 :: [(Int -> Bool)] -> [(Int -> Bool)] -> [(Int -> Bool)] -> [String] -> [String] -> [String] -> IO()
 descliststrength2 (x:y:funclist) m n (xs:ys:funcliststring) ms ns
-| mystronger x y = descliststrength2 (y:funclist) (x:m) n (ys:funcliststring) (xs:ms) ns
-| mystronger y x = descliststrength2 (x:funclist) (y:m) n (xs:funcliststring) (ys:ms) ns
---if (mystronger x y) then descliststrength (y:funclist) (x:m) n else descliststrength (x:funclist) (y:m) n
+  | mystronger x y = descliststrength2 (y:funclist) (x:m) n (ys:funcliststring) (xs:ms) ns
+  | mystronger y x = descliststrength2 (x:funclist) (y:m) n (xs:funcliststring) (ys:ms) ns
 descliststrength2 [x] m n [xs] ms ns = descliststrength2 m [] (x:n) ms [] (xs:ns)
 descliststrength2 [] _ n _ _ ns = print ns
 
@@ -137,7 +136,10 @@ test4d = do quickCheck prop4d
 test4e = do quickCheck prop4e
 
 -- Recognizing and generating derangements (1 hour)
+-- Derangement of empty list does not exist.
 isDerangement :: Eq a => [a] -> [a] -> Bool
+isDerangement [] _ = False
+isDerangement _ [] = False
 isDerangement x y
     | isPermutation x y = isDerangement2 x y
     | otherwise = False
@@ -151,8 +153,30 @@ isDerangement2 (x:xs) (y:ys)
 deran :: Int -> [[Int]]
 deran n = filter (\x -> isDerangement x [0..(n-1)]) (permutations [0..(n-1)])
 
---Can use to high number
---test5 = quickCheckResult (\ (Positive x) -> x == 1 || isDerangement [0..x-1] (head (deran x)) == True)
+prop5a :: [Int] -> Bool
+prop5a x = isDerangement x x == False
+
+prop5b :: [Int] -> [Int] -> Bool
+prop5b x y
+    | isDerangement x y = (length x == length y)
+    | otherwise = True
+
+prop5c :: [Int] -> [Int] -> Bool
+prop5c x y = isDerangement x y == isDerangement y x
+
+prop5d :: [Int] -> [Int] -> [Int] -> Bool
+prop5d x y z
+    | isDerangement x y && isDerangement y z && not (isDerangement x z) = False
+    | otherwise = True
+
+prop5e :: [Int] -> [Int] -> Bool
+prop5e x y = isDerangement x y == isDerangement y x
+
+test5a = do quickCheck prop5a
+test5b = do quickCheck prop5b
+test5c = do quickCheck prop5c
+test5d = do quickCheck prop5d
+test5e = do quickCheck prop5e
 
 -- Implementing and testing ROT13 (1 hour)
 add13 :: Int -> Int
@@ -179,9 +203,3 @@ iban2 (s:ss) n
     | otherwise = iban2 ss (n ++ [s])
 
 test7 = iban "GB82WEST12345698765432"
-
-
-
-
-
-

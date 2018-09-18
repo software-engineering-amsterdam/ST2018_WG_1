@@ -113,6 +113,8 @@ isDerangement2 [] [] = True
 deran :: Int -> [[Int]]
 deran n = filter(\x -> isDerangement x [0..(n-1)]) (permutations [0..(n-1)])
 
+
+
 rot13 :: String -> String
 rot13 n = map (\x -> if((ord x + 13) > 122) then (chr $ ord x -13) else chr $ ord x + 13) n
 
@@ -125,10 +127,10 @@ rot13 n = map (\x -> if((ord x + 13) > 122) then (chr $ ord x -13) else chr $ or
 
 
 iban3 :: String -> Int
-iban3 (x1:x2:x3:x4:n) = (iban2 (n ++  [x1,x2,x3,x4]) 0) 
+iban3 (x1:x2:x3:x4:n) = (iban2 (n ++  [x1,x2,x3,x4]) "")
 
 
 
-iban2 :: String -> Int -> Int
-iban2 [] n = n
-iban2 (x:xs) n = if(isDigit x) then iban2 xs (n*10 + digitToInt x) else iban2 xs (n*100 + (ord x - 55))
+iban2 :: String -> String -> Int
+iban2 [] n = read n :: Int
+iban2 (x:xs) n = if(isDigit x) then iban2 xs ( n ++ [x]) else iban2 xs (n ++ [(chr $ ord x - 55)])
