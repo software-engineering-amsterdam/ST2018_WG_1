@@ -69,7 +69,7 @@ isoTriTest = quickCheckResult (\(Positive a) -> triangle (2*a) (2*a) (4*a-1) == 
 rectTriTest = all (\(a,b,c) -> triangle a b c == Rectangular) $ getPythTriples 100
 
 
--- Exercise 3a:
+-- Exercise 3a: (1:00)
 forall = flip all
 stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
 stronger xs p q = forall xs (\ x -> p x --> q x)
@@ -85,7 +85,8 @@ p3b = stronger [(-10)..10] ex3b even
 p3c = stronger [(-10)..10] ex3c even
 p3d = stronger [(-10)..10] even ex3c
 
--- Exercise 3b
+-- Exercise 3b (1:00)
+-- Result: [a, c, d, b] (stronger to weaker)
 
 data Function a b = Function {
     name :: String,
@@ -113,4 +114,50 @@ order x y
         a = fn x
         b = fn y
 
-ex3 = sortBy order props
+ex3 = [name x | x <- reverse (sortBy order props)]
+
+-- Exercise 4: (1:00)
+
+-- This function sorts a list from low to high
+quickSort :: Ord a => [a] -> [a]
+quickSort [] = []
+quickSort (x:xs) = quickSort [a | a <- xs, a <= x] ++ [x] ++ [a | a <- xs, a > x]
+
+
+isPermutation :: (Eq a, Ord a) => [a] -> [a] -> Bool
+isPermutation x y
+    | x == y = True
+    | otherwise = (quickSort x) == (quickSort y)
+
+
+isEqualLength :: [a] -> [a] -> Bool
+isEqualLength x y = length x == length y
+
+isAssoc :: Ord a => [a] -> [a] -> Bool
+isAssoc x y = isPermutation x y == isPermutation y x
+
+isTrans :: Ord a => [a] -> [a] -> [a] -> Bool
+isTrans x y z
+    | isPermutation x y && isPermutation y z && not (isPermutation x z) = False
+    | otherwise = True
+
+
+-- Exercise 5: (1:00)
+isDerangement :: (Eq a, Ord a) => [a] -> [a] -> Bool
+isDerangement x y = isPermutation x y && all (==True) (map (\(x,y) -> x /= y) (zip x y))
+
+deran :: Int -> [[Int]]
+deran n = [list] ++ [x | x <- permutations list, isDerangement x list]
+    where
+        list = [0..(n-1)]
+
+deranLength :: Ord a => [a] -> [a] -> Bool
+deranLength x y
+    | length x == length y  = True
+    | otherwise             = False
+
+
+-- Exercise 6: (1:00)
+rot13 :: [Char] -> [Char] -> Bool
+rot13 [] y = y
+rot13 (x:xs) y = rot13 xs (y ++ )
