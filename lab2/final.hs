@@ -24,7 +24,7 @@ data Shape = NoTriangle | Equilateral
 
 -- Red Curry (2.5 hour)
 -- This function calculates how many ocurences there are in the ranges
--- (0..0.25),[0.25..0.5),[0.5..0.75),[0.75..1)
+-- (0..0.25),[0.25..0.5),[0.5..0.75),[0.75..1).
 probTest :: IO [Float] -> IO [Int]
 probTest numbers = do
     list <- numbers
@@ -34,14 +34,16 @@ probTest numbers = do
     let r4 = filter (\x -> x >= 0.75 && x < 1) list
     return $ [length r1, length r2, length r3, length r4]
 
--- This test if probs is random. When looking at the outcome we see
--- that most of the time the quartes do not have a difference than
--- a 100 from the 2500 the all should have. This makes probs a decent
+-- This tests if probs is random. When looking at the outcome we see
+-- that most of the time the quartes do not have a difference greater than
+-- a 100 from the 2500 they all should have. This makes probs a decent
 -- random float generator.
 test1 = probTest (probs 10000)
 
 -- Recognizing triangles (1 hour)
-
+-- This function checks if with the length of the sides given a triangle
+-- can be formed. If a triangle can be formed the functions checks which
+-- type of triange it is.
 triangle :: Integer -> Integer -> Integer -> Shape
 triangle a b c
     | a + b <= c || b + c <= a || c + a <= b = NoTriangle
@@ -51,18 +53,27 @@ triangle a b c
     | otherwise = Other
 
 -- From first weeks slides
--- To calculate python triples to test Rectangular triangles
+-- To calculate python triples to test Rectangular triangles.
 pythTriples :: [(Integer,Integer,Integer)]
 pythTriples = filter (\ (x,y,z) -> x^2 + y^2 == z^2)
                     [ (x,y,z) | z <- [1..], x <- [1..z], y <- [1..z], x < y]
 
+-- Tests if the function triangle works correctly.
+-- When a side is longer than two of the other side combined then
+-- a triangle can't be formed.
 test2a = quickCheckResult (\ (Positive a) (Positive b) (Positive c) ->
                             triangle a b (a+b+c) == NoTriangle)
+-- When all sides of a triangle have the same length,
+-- then the triangle is equilateral
 test2b = quickCheckResult (\ (Positive a) -> triangle a a a == Equilateral)
+-- When the sides of a triangle are a pythagoras triple,
+-- then the triangle is rectangular
 test2c = all (\(x,y,z) -> triangle x y z == Rectangular) (take 100 pythTriples)
+-- When two sides of the triangle are equal,
+-- then the triagnle is isosceles
 test2d = quickCheckResult (\ (Positive a) -> triangle (2*a) (2*a) ((4*a)-1) == Isosceles)
 
--- Testing properties strength (30 min)
+-- Testing properties strength (1 hour)
 forall :: [a] -> (a->Bool) -> Bool
 forall = flip all
 
@@ -98,11 +109,16 @@ descliststrength2 [x] m n [xs] ms ns = descliststrength2 m [] (x:n) ms [] (xs:ns
 descliststrength2 [] _ n _ _ ns = print ns
 
 -- Recognizing permutations (1 hour)
+-- The function isPermutation checks if the length of two list are equal
+-- and then checks if the second list is a permutation of the first
+-- by calling isPermutation2.
 isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation x y
     | length x == length y = isPermutation2 x y []
     | otherwise = False
 
+-- This function checks if a list is a permutation of another by looping
+-- through the second list to find the first caracter of the first list.
 isPermutation2 :: Eq a => [a] -> [a] -> [a] -> Bool
 isPermutation2 [] [] [] = True
 isPermutation2 _ [] _ = False
@@ -110,33 +126,40 @@ isPermutation2 (x:xs) (y:ys) n
     | x == y = isPermutation2 xs (ys ++ n) []
     | otherwise = isPermutation2 (x:xs) ys (y:n)
 
+-- Permutations have the property that a list is a permutation of its self.
 prop4a :: [Int] -> Bool
 prop4a x = isPermutation x x == True
 
+-- Permutations have the property that the length of two list that are
+-- permutations of each other is the same
 prop4b :: [Int] -> [Int] -> Bool
 prop4b x y
     | isPermutation x y = (length x == length y)
     | otherwise = True
 
+-- Permutations have the property that if x is a permutation of y,
+-- y is a permutation of x.
 prop4c :: [Int] -> [Int] -> Bool
 prop4c x y = isPermutation x y == isPermutation y x
 
+-- Permutations have the property that if x is a permutation of y and
+-- y is a permutation of z, then x is a permutation of z.
 prop4d :: [Int] -> [Int] -> [Int] -> Bool
 prop4d x y z
     | isPermutation x y && isPermutation y z && not (isPermutation x z) = False
     | otherwise = True
 
-prop4e :: [Int] -> [Int] -> Bool
-prop4e x y = isPermutation x y == isPermutation y x
-
+-- These are quickCheck tests to test if our permutations function has these
+-- properties.
 test4a = do quickCheck prop4a
 test4b = do quickCheck prop4b
 test4c = do quickCheck prop4c
 test4d = do quickCheck prop4d
-test4e = do quickCheck prop4e
 
 -- Recognizing and generating derangements (1 hour)
--- Derangement of empty list does not exist.
+-- This function tests if a list is the derangement of the first list. This
+-- is done by first checking if the lists are permutations en then to call
+-- isDerangement2. Also a derangement of an empty list does not exists.
 isDerangement :: Eq a => [a] -> [a] -> Bool
 isDerangement [] _ = False
 isDerangement _ [] = False
@@ -144,58 +167,74 @@ isDerangement x y
     | isPermutation x y = isDerangement2 x y
     | otherwise = False
 
+-- This function checks if the second list is a derangement by checking if the
+-- character of the first list is not on the same position in the second list.
 isDerangement2 :: Eq a => [a] -> [a] -> Bool
 isDerangement2 [] [] = True
 isDerangement2 (x:xs) (y:ys)
     | x == y = False
     | otherwise = isDerangement2 xs ys
 
+-- This function creates a list of derangements by checking all permutations
+-- of the list and then check if it is a derangement by calling is Derangement.
 deran :: Int -> [[Int]]
 deran n = filter (\x -> isDerangement x [0..(n-1)]) (permutations [0..(n-1)])
 
+-- Derangements have the property that a list is not the derangement of itself.
 prop5a :: [Int] -> Bool
 prop5a x = isDerangement x x == False
 
+-- Derangements have the property that a derangement of a list must have
+-- the same length as the list.
 prop5b :: [Int] -> [Int] -> Bool
 prop5b x y
     | isDerangement x y = (length x == length y)
     | otherwise = True
 
+-- Derangements have the property that if x is a derangement of y,
+-- then y is a derangement of x.
 prop5c :: [Int] -> [Int] -> Bool
 prop5c x y = isDerangement x y == isDerangement y x
 
+-- Derangements have the property that if x is a derangement of y and y is
+-- a derangement of z and x not equal to z, then x is a derangement of z.
 prop5d :: [Int] -> [Int] -> [Int] -> Bool
 prop5d x y z
     | isDerangement x y && isDerangement y z && not (isDerangement x z) = False
     | otherwise = True
 
-prop5e :: [Int] -> [Int] -> Bool
-prop5e x y = isDerangement x y == isDerangement y x
-
 test5a = do quickCheck prop5a
 test5b = do quickCheck prop5b
 test5c = do quickCheck prop5c
 test5d = do quickCheck prop5d
-test5e = do quickCheck prop5e
 
 -- Implementing and testing ROT13 (1 hour)
+-- This function moves a letter 13 positions in the alphabet.
+-- We also need to check for uppercase and 'a' does not start at 1.
 add13 :: Int -> Int
 add13 x
     | (x + 13) > (97 + 25) = x + 13 - 26
     | x < 97 && (x + 13) > (65 + 25) = x + 13 - 26
     | otherwise = x + 13
 
+-- This function moves all the letters of a string 13 positions.
 rot13 :: [Char] -> [Char] -> [Char]
 rot13 [] y = y
 rot13 (x:xs) y = rot13 xs (y ++ [chr (add13 (ord x))])
 
 -- Implementing and testing IBAN validation (30 min)
+-- This function checks if a string is a valid IBAN. This is done by first
+-- checking if the string has the right length. Then we need to at the first
+-- four chars to the end. Then we translate all the letters in numbers by
+-- calling iban2. The total number is then checked to see
+-- if mod 97 is equal to 1.
 iban :: String -> Bool
 iban s
     | length s > 34 && length s < 4 = False
     | mod (read (iban2 (snd (splitAt 4 (s ++ (take 4 s)))) [])) 97 == 1 = True
     | otherwise = False
 
+-- This function translates the letters in the IBAN to numbers.
 iban2 :: [Char] -> [Char] -> [Char]
 iban2 [] n = n
 iban2 (s:ss) n
