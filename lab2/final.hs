@@ -275,7 +275,7 @@ test6c = do quickCheck prop6c
 -- if mod 97 is equal to 1.
 iban :: String -> Bool
 iban s
-    | length s > 34 && length s < 4 = False
+    | length s > 34 || length s < 15 = False
     | mod (read (iban2 (snd (splitAt 4 (s ++ (take 4 s)))) [])) 97 == 1 = True
     | otherwise = False
 
