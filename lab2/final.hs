@@ -217,8 +217,14 @@ test5d = do quickCheck prop5d
 -- +++ OK, passed 100 tests.
 
 -- Implementing and testing ROT13 (1 hour)
--- This function moves a letter 13 positions in the alphabet.
--- We also need to check for uppercase and 'a' does not start at 1 in the ASCII alphabet.
+-- ROT13(x) = 
+--      - If x is a letter A-Z or a-z, then the letter is moved 13 positions
+--        to the right or wrapped around. Lowercase stays lowercase, uppercase stays uppercase.
+--      - Otherwise, x remains the same.
+
+-- ROT13(ROT13(x)) = x
+--      - ROT13 is its own inverse
+
 add13 :: Int -> Int
 add13 x
     | x >= 65 && x+13 <= 90 = x+13
@@ -246,9 +252,10 @@ prop6b xs = prop6b2 xs (rot13 xs [])
 prop6b2 :: [Char] -> [Char] -> Bool
 prop6b2 [] [] = True
 prop6b2 (x:xs) (y:ys)
-    | ((xi >= 65 && xi <= 90) || (xi >= 97 && xi <= 122)) && ((yi >= 65 && yi <= 90) || (yi >= 97 && yi <= 122)) && abs (xi-yi) == 13 = prop6b2 xs ys
-    | x /= y = False
-    | otherwise = prop6b2 xs ys
+    | (xi >= 65 && xi <= 90) && (yi >= 65 && yi <= 90) && abs (xi-yi) == 13     = prop6b2 xs ys
+    | (xi >= 97 && xi <= 122) && (yi >= 97 && yi <= 122) && abs (xi-yi) == 13   = prop6b2 xs ys
+    | x /= y                                                                    = False
+    | otherwise                                                                 = prop6b2 xs ys
     where
         xi = ord x
         yi = ord y
