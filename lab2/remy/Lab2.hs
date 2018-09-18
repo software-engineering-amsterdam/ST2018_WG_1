@@ -157,7 +157,32 @@ deranLength x y
     | otherwise             = False
 
 
--- Exercise 6: (1:00)
-rot13 :: [Char] -> [Char] -> Bool
+-- Exercise 6: (0:30)
+rot13 :: [Char] -> [Char] -> [Char]
 rot13 [] y = y
-rot13 (x:xs) y = rot13 xs (y ++ )
+rot13 (x:xs) y = rot13 xs (y ++ [chr (add13 (ord x))])
+
+add13 :: Int -> Int
+add13 x
+    | x >= 65 && x+13 <= 90 = x+13
+    | x >= 65 && x <= 90 = x-13
+    | x >= 97 && x+13 <= 122 = x+13
+    | x >= 97 && x <= 122 = x-13
+
+-- Exercise 7:
+moveToEnd :: Int -> [Char] -> [Char]
+moveToEnd n xs = ys ++ y
+    where
+        (y, ys) = splitAt n xs
+
+iban :: String -> Bool
+iban n = number `mod` 97 == 1
+    where
+        split = moveToEnd 4 n
+        number = read (iban2 split []) :: Integer
+
+iban2 :: [Char] -> [Char] -> [Char]
+iban2 [] ys = ys
+iban2 (x:xs) ys
+    | x >= 'A' && x <= 'Z'  = iban2 xs (ys ++ (show ((ord x) - 55)))
+    | otherwise             = iban2 xs (ys ++ [x])
