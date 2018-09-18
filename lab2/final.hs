@@ -218,7 +218,7 @@ test5d = do quickCheck prop5d
 
 -- Implementing and testing ROT13 (1 hour)
 -- This function moves a letter 13 positions in the alphabet.
--- We also need to check for uppercase and 'a' does not start at 1.
+-- We also need to check for uppercase and 'a' does not start at 1 in the ASCII alphabet.
 add13 :: Int -> Int
 add13 x
     | x >= 65 && x+13 <= 90 = x+13
