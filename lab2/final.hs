@@ -152,9 +152,13 @@ prop4d x y z
 -- These are quickCheck tests to test if our permutations function has these
 -- properties.
 test4a = do quickCheck prop4a
+-- +++ OK, passed 100 tests.
 test4b = do quickCheck prop4b
+-- +++ OK, passed 100 tests.
 test4c = do quickCheck prop4c
+-- +++ OK, passed 100 tests.
 test4d = do quickCheck prop4d
+-- +++ OK, passed 100 tests.
 
 -- Recognizing and generating derangements (1 hour)
 -- This function tests if a list is the derangement of the first list. This
@@ -204,9 +208,13 @@ prop5d x y z
     | otherwise = True
 
 test5a = do quickCheck prop5a
+-- +++ OK, passed 100 tests.
 test5b = do quickCheck prop5b
+-- +++ OK, passed 100 tests.
 test5c = do quickCheck prop5c
+-- +++ OK, passed 100 tests.
 test5d = do quickCheck prop5d
+-- +++ OK, passed 100 tests.
 
 -- Implementing and testing ROT13 (1 hour)
 -- This function moves a letter 13 positions in the alphabet.
