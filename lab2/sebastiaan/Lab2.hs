@@ -5,6 +5,8 @@ import Data.List
 import Data.Char
 import System.Random
 import Test.QuickCheck
+import Data.Maybe
+
 
 infix 1 --> 
 
@@ -92,19 +94,50 @@ test5 = compar [-10..10] prop2 prop4
 test6 = compar [-10..10] prop3 prop4
 
 
-countL :: Eq a => a -> [a] -> Int
-countL x = length . filter (x==)
+-- countL :: Eq a => a -> [a] -> Int
+-- countL x = length . filter (x==)
 
 -- countList :: [a] -> [(a, Int)]
 -- countList list = 
-listCount :: [a] -> [a]
-listCount a :: [ [countL y a, y] | y <- (nub a) ]
+-- listCount :: [a] -> [a]
+-- listCount a = [ [countL y a, y] | y <- (nub a) ]
 
-compareL :: Eq a => [a] -> [a] -> Bool
-compareL (x:xs) b
-    | find x
-    |
+-- compareL :: Eq a => [a] -> [a] -> Bool
+-- compareL (x:xs) b
+--     | find (tail x) b = 
+--     |
 
-isPermutation :: Eq a => [a] -> [a] -> Bool
-isPermutation a b = result
-    where result = compareL (listCount a) b
+-- isPermutation :: Eq a => [a] -> [a] -> Bool
+-- isPermutation a b = result
+--     where result = compareL (listCount a) b
+
+
+
+-- Exercise 7
+slice from to xs = take (to - from + 1) (drop from xs)
+
+aZupperList = ['A'..'Z']
+
+replaceLetter :: String -> String
+replaceLetter [] = ""
+replaceLetter (x:xs)
+  | x `elem` aZupperList = (show newValue) ++ replaceLetter xs
+  | otherwise = x:replaceLetter xs
+  where
+    index = fromJust (findIndex (==x) aZupperList)
+    newValue = index + 10
+
+
+controlIban :: String -> Integer
+controlIban a = result where 
+    firstFour = slice 0 3 a
+    identification = slice 4 30 a
+    tmp = ((replaceLetter (identification ++ (slice 0 1 firstFour))) ++ (slice 2 3 firstFour))
+    totalIdentNumber = read tmp :: Integer
+    result = (totalIdentNumber `mod` 97)
+
+
+iban :: String -> Bool
+iban a = result where
+    controlNumber = controlIban a
+    result = controlNumber == 1
