@@ -132,7 +132,7 @@ rot13 (x:xs) y = rot13 xs (y ++ [chr (add13 (ord x))])
 iban :: String -> Bool
 iban s
     | length s > 34 && length s < 4 = False
-    | mod (read (iban2 (snd (splitAt 4 s)) [])) 97 == 1 = True
+    | mod (read (iban2 (snd (splitAt 4 (s ++ (take 4 s)))) [])) 97 == 1 = True
     | otherwise = False
 
 iban2 :: [Char] -> [Char] -> [Char]
