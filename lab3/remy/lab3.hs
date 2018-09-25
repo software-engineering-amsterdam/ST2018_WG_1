@@ -62,9 +62,13 @@ ex2Test = map parseTest allTests
 -- - Equiv: Followed by 2 separate subforms.
 --
 -- There are no preconditions for the generator.
--- There are postconditions though.
--- - There must be Props.
--- - There must be Props at the end of the logic tree.
+-- There are postconditions though:
+-- - The output must be a valid formula.
+--   This is already checked in the generator, because the output
+--   has to be of type IO Form.
+-- - Furthermore could the generator fail if we do not create any Props.
+--   This is done by placing Props at every leaf in the generator.
+--   Also we defined a max depth, and at max depth we automatically place a Prop as leaf.
 
 getNodeType :: Int -> String
 getNodeType 0 = "Prop"
@@ -79,7 +83,6 @@ randomNodeType :: [Int] -> IO String
 randomNodeType l = do
     x <- randomRIO (0, (length l)-1)
     return $ getNodeType $ l !! x
-
 
 -- Generate a random form.
 -- d is depth of the tree, if that is 0, than we create a prop instead of something else.
@@ -117,19 +120,26 @@ genForms x d n = do
 -- This function executes a function on a random generated formula.
 -- This works with the testParse function
 -- Also a depth should be given, so that we do not necessarily generate huge formulas.
-testParseRandom :: Int -> (Form -> Bool) -> IO ()
-testParseRandom d p = do
-    x <- randomRIO (0,d)
-    f <- genForm x [0,1,2,3,4,5]
+testParseRandom :: [Form] -> (Form -> Bool) -> IO ()
+testParseRandom [] _ = putStrLn "Passed test!"
+testParseRandom (f:fn) p = do
     if (p f) then
         do
-            putStrLn "Passed test"
+            testParseRandom fn p
     else
         putStrLn "Failed test"
 
+genNForms :: Int -> Int -> IO [Form]
+genNForms 0 _ = return []
+genNForms n d = do
+    f   <- genForm d [0,1,2,3,4,5]
+    fn  <- genNForms (n-1) d
+    return $ f:fn
+
 -- This function executes a function N times on random generated formulas.
 testParseRandomN :: Int -> Int -> (Form -> Bool) -> IO ()
-testParseRandomN 0 d p = putStrLn "Test finished!"
+testParseRandomN 0 _ _ = putStrLn "Testing 0 times is not very useful, is it?"
 testParseRandomN n d p = do
-    testParseRandom d p
-    testParseRandomN (n-1) d p
+    ranForms <- genNForms n d
+    putStrLn $ "--- Start " ++ show n ++ " tests!"
+    testParseRandom ranForms p
