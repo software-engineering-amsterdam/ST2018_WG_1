@@ -40,7 +40,29 @@ equiv f1 f2 = (filter (\ v -> evl v f1) (allVals f1)) == (filter (\ v -> evl v f
 test1g = equiv form1 form1
 test1h = equiv form1 form2
 
--- Exercise 2
+
+-- Exercise 2 (1 hour)
+-- This function checks whether a given Form as String
+-- gives the same Form when parsed with the parse function.
+-- In Exercise 4 we test this with randomly generated Forms.
+parseTest :: Form -> Bool
+parseTest f = head (parse (show f)) == f
+
+-- Here are some handmade Forms to be tested.
+test1 = form1
+test2 = form2
+test3 = form3
+test4 = Equiv form1 form2
+test5 = Impl form1 form3
+test6 = Equiv r (Neg r)
+test7 = Dsj [form1, form2]
+test8 = Cnj [form1, form2, form3]
+test9 = r
+
+allTests = [test1, test2, test3, test4, test5, test6, test7, test8, test9]
+
+ex2Test = map parseTest allTests
+
 
 -- Exercise 3 (1.5 hour)
 -- When translating a form to CNF we need to make the form arrowfree,
@@ -76,7 +98,7 @@ test3c = toCNF form3c
 test3d = toCNF form3d
 
 
--- Exercise 4: (2:00)
+-- Exercise 4 (2 hours)
 -- Node rules:
 -- - Prop:  Followed only by a Prop/Int.
 -- - Neg:   Followed by a subform.
@@ -144,12 +166,12 @@ genForms x d n = do
 -- This function executes a function on a random generated formula.
 -- This works with the testParse function
 -- Also a depth should be given, so that we do not necessarily generate huge formulas.
-testParseRandom :: [Form] -> (Form -> Bool) -> IO ()
-testParseRandom [] _ = putStrLn "Passed test!"
-testParseRandom (f:fn) p = do
+testRandForm :: [Form] -> (Form -> Bool) -> IO ()
+testRandForm [] _ = putStrLn "Passed test!"
+testRandForm (f:fn) p = do
     if (p f) then
         do
-            testParseRandom fn p
+            testRandForm fn p
     else
         putStrLn $ "Failed test:\n" ++ (show f)
 
@@ -161,26 +183,26 @@ genNForms n d = do
     return $ f:fn
 
 -- This function executes a function N times on random generated formulas.
-testParseRandomN :: Int -> Int -> (Form -> Bool) -> IO ()
-testParseRandomN 0 _ _ = putStrLn "Testing 0 times is not very useful, is it?"
-testParseRandomN n d p = do
+testRandFormN :: Int -> Int -> (Form -> Bool) -> IO ()
+testRandFormN 0 _ _ = putStrLn "Testing 0 times is not very useful, is it?"
+testRandFormN n d p = do
     ranForms <- genNForms n d
     putStrLn $ "--- Start " ++ show n ++ " tests!"
-    testParseRandom ranForms p
+    testRandForm ranForms p
 
 -- Test properties
 randTautology :: IO ()
-randTautology = testParseRandomN 100 3 tautology
+randTautology = testRandFormN 100 3 tautology
 
 randContradiction :: IO ()
-randContradiction = testParseRandomN 100 3 contradiction
+randContradiction = testRandFormN 100 3 contradiction
 
 randEquiv1, randEquiv2 :: IO ()
-randEquiv1 = testParseRandomN 100 3 (\x -> equiv x x)
-randEquiv2 = testParseRandomN 100 3 (\x -> equiv x $ Neg x)
+randEquiv1 = testRandFormN 100 3 (\x -> equiv x x)
+randEquiv2 = testRandFormN 100 3 (\x -> equiv x $ Neg x)
 
 randCNF :: IO ()
-randCNF = testParseRandomN 100 3 (\x -> equiv (toCNF x) x)
+randCNF = testRandFormN 100 3 (\x -> equiv (toCNF x) x)
 
--- randParse :: IO ()
--- randParse = testParseRandomN 100 3 testParse
+randParse :: IO ()
+randParse = testRandFormN 100 3 parseTest

@@ -31,9 +31,12 @@ equiv f1 f2 = v1 == v2
 
 
 -- Exercise 2:
+-- This function checks whether a given Form as String
+-- gives the same Form when parsed with the parse function.
 parseTest :: Form -> Bool
 parseTest f = head (parse (show f)) == f
 
+-- Here are some handmade Forms to be tested.
 test1 = form1
 test2 = form2
 test3 = form3
