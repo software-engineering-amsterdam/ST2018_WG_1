@@ -69,47 +69,60 @@ ex2Test = map parseTest allTests
 getNodeType :: Int -> String
 getNodeType 0 = "Prop"
 getNodeType 1 = "Neg"
-getNodeType 2 = "Or"
-getNodeType 3 = "And"
+getNodeType 2 = "Dsj"
+getNodeType 3 = "Cnj"
 getNodeType 4 = "Impl"
 getNodeType 5 = "Equiv"
 getNodeType _ = error "Non existing node type"
 
-randomNodeType :: IO String
-randomNodeType = do
-    x <- randomRIO (0,5)
-    return $ getNodeType x
+randomNodeType :: [Int] -> IO String
+randomNodeType l = do
+    x <- randomRIO (0, (length l)-1)
+    return $ getNodeType $ l !! x
 
 
 -- Generate a random form.
 -- d is depth of the tree, if that is 0, than we create a prop instead of something else.
 -- This way we won't go infinitely deep at random.
-genForm :: Int -> IO Form
-genForm 0 = do
+-- nt is a list of nodeTypes that are allowed to be used in the (sub)form.
+genForm :: Int -> [Int] -> IO Form
+genForm 0 _ = do
     x <- randomRIO (1,5)
     return $ Prop x
-genForm d = do
-    node        <- randomNodeType
+genForm d nt = do
+    node        <- randomNodeType nt
     prop        <- randomRIO (1,5)
-    f1          <- genForm (d-1)
-    f2          <- genForm (d-1)
+    f1          <- genForm (d-1) [0,1,2,3,4,5]
+    f2          <- genForm (d-1) [0,1,2,3,4,5]
     x           <- randomRIO (2,5)
-    fn          <- genForms x (d-1)
+    fn          <- genForms x (d-1) node
     case node of
         "Prop"  -> return $ Prop prop
         "Neg"   -> return $ Neg f1
-        "Or"    -> return $ Dsj fn
-        "And"   -> return $ Cnj fn
+        "Dsj"   -> return $ Dsj fn
+        "Cnj"   -> return $ Cnj fn
         "Impl"  -> return $ Impl f1 f2
         "Equiv" -> return $ Equiv f1 f2
         _       -> error "Unknown node type"
 
 
 -- This generates a list of forms for conjunctions and disjunctions.
-genForms :: Int -> Int -> IO [Form]
-genForms 0 _ = return []
-genForms x d = do
-    f1 <- genForm d
-    fn <- genForms (x-1) d
+genForms :: Int -> Int -> String -> IO [Form]
+genForms 0 _ _ = return []
+genForms x d n = do
+    f1 <- genForm d $ filter (\x -> getNodeType x /= n) [0,1,2,3,4,5]
+    fn <- genForms (x-1) d n
     return $ f1:fn
 
+-- This function executes a function on a random generated formula.
+-- This works with the testParse function
+-- Also a depth should be given, so that we do not necessarily generate huge formulas.
+testParseRandom :: Int -> (Form -> Bool) -> IO ()
+testParseRandom d p = do
+    x <- randomRIO (0,d)
+    f <- genForm x [0,1,2,3,4,5]
+    if (p f) then
+        do
+            putStrLn "Passed test"
+    else
+        putStrLn "Failed test"
