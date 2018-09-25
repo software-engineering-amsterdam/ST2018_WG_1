@@ -49,25 +49,22 @@ allTests = [test1, test2, test3, test4, test5, test6, test7, test8, test9]
 ex2Test = map parseTest allTests
 
 
--- Exercise 3
--- Find disjunctions and transform them into conjunctions.
-formToCnf :: Form -> Form
-formToCnf f = nnf $ arrowfree f
-
 
 
 
 -- Exercise 4
--- TASKS:
--- + Choose random node types, choose between 0-5
--- - When conjunction or disjunction, make it possible to create multiple sub formulas
--- - Create random props (1-5)
--- - generate 2 random subforms for equiv and impl
--- 
-
-randomBoundedInt :: Int -> Int -> IO Int
-randomBoundedInt x y = randomRIO (x,y)
-
+-- Node rules:
+-- - Prop:  Followed only by a Prop/Int.
+-- - Neg:   Followed by a subform.
+-- - Dsj:   Followed by a list of subforms.
+-- - Cnj:   Followed by a list of subforms.
+-- - Impl:  Followed by 2 separate subforms.
+-- - Equiv: Followed by 2 separate subforms.
+--
+-- There are no preconditions for the generator.
+-- There are postconditions though.
+-- - There must be Props.
+-- - There must be Props at the end of the logic tree.
 
 getNodeType :: Int -> String
 getNodeType 0 = "Prop"
@@ -81,23 +78,23 @@ getNodeType _ = error "Non existing node type"
 randomNodeType :: IO String
 randomNodeType = do
     x <- randomRIO (0,5)
-    return (getNodeType x)
+    return $ getNodeType x
 
 
 -- Generate a random form.
 -- d is depth of the tree, if that is 0, than we create a prop instead of something else.
 -- This way we won't go infinitely deep at random.
-genForm :: Int -> Int -> IO Form
-genForm 0 _ = do
-    x <- randomBoundedInt 1 5
+genForm :: Int -> IO Form
+genForm 0 = do
+    x <- randomRIO (1,5)
     return $ Prop x
-genForm d n = do
-    node    <- randomNodeType
-    prop    <- randomBoundedInt 1 5
-    f1      <- genForm (d-1) n
-    f2      <- genForm (d-1) n
-    x       <- randomBoundedInt 2 5
-    fn      <- genForms x (d-1) n
+genForm d = do
+    node        <- randomNodeType
+    prop        <- randomRIO (1,5)
+    f1          <- genForm (d-1)
+    f2          <- genForm (d-1)
+    x           <- randomRIO (2,5)
+    fn          <- genForms x (d-1)
     case node of
         "Prop"  -> return $ Prop prop
         "Neg"   -> return $ Neg f1
@@ -108,10 +105,11 @@ genForm d n = do
         _       -> error "Unknown node type"
 
 
-genForms :: Int -> Int -> Int -> IO [Form]
-genForms 0 _ _ = return []
-genForms x d n = do
-    f1 <- genForm d n
-    fn <- genForms (x-1) d n
+-- This generates a list of forms for conjunctions and disjunctions.
+genForms :: Int -> Int -> IO [Form]
+genForms 0 _ = return []
+genForms x d = do
+    f1 <- genForm d
+    fn <- genForms (x-1) d
     return $ f1:fn
 
