@@ -127,6 +127,7 @@ testParseRandom d p = do
     else
         putStrLn "Failed test"
 
+-- This function executes a function N times on random generated formulas.
 testParseRandomN :: Int -> Int -> (Form -> Bool) -> IO ()
 testParseRandomN 0 d p = putStrLn "Test finished!"
 testParseRandomN n d p = do
