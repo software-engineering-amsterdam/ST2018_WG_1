@@ -126,3 +126,9 @@ testParseRandom d p = do
             putStrLn "Passed test"
     else
         putStrLn "Failed test"
+
+testParseRandomN :: Int -> Int -> (Form -> Bool) -> IO ()
+testParseRandomN 0 d p = putStrLn "Test finished!"
+testParseRandomN n d p = do
+    testParseRandom d p
+    testParseRandomN (n-1) d p
