@@ -52,7 +52,7 @@ ex2Test = map parseTest allTests
 
 
 
--- Exercise 4
+-- Exercise 4: (2:00)
 -- Node rules:
 -- - Prop:  Followed only by a Prop/Int.
 -- - Neg:   Followed by a subform.
@@ -127,7 +127,7 @@ testParseRandom (f:fn) p = do
         do
             testParseRandom fn p
     else
-        putStrLn "Failed test"
+        putStrLn $ "Failed test:\n" ++ (show f)
 
 genNForms :: Int -> Int -> IO [Form]
 genNForms 0 _ = return []
@@ -143,3 +143,14 @@ testParseRandomN n d p = do
     ranForms <- genNForms n d
     putStrLn $ "--- Start " ++ show n ++ " tests!"
     testParseRandom ranForms p
+
+-- Test properties
+randTautology :: IO ()
+randTautology = testParseRandomN 100 3 tautology
+
+randContradiction :: IO ()
+randContradiction = testParseRandomN 100 3 contradiction
+
+randEquiv1, randEquiv2 :: IO ()
+randEquiv1 = testParseRandomN 100 3 (\x -> equiv x x)
+randEquiv2 = testParseRandomN 100 3 (\x -> equiv x $ Neg x)
