@@ -9,7 +9,7 @@ import Lecture3
 -- To test are definitions we used two forms per definiotion.
 -- The first test per definition should be true and the second
 -- should be false. Thus test1a, test1c, test1e and test1g should
--- be true and test1b, test1d, test1f and test1h should be fasle.
+-- be true and test1b, test1d, test1f and test1h should be false.
 form1a = Cnj [p, Neg p]
 form1b = Dsj [p, Neg p]
 
@@ -26,7 +26,7 @@ test1c = tautology form1b
 test1d = tautology form1a
 
 -- | logical entailment
--- The result answers the quistion if f2 logically entails f1.
+-- The result answers the question if f2 logically entails f1.
 entails :: Form -> Form -> Bool
 entails f1 f2 =  all (\ v -> evl v f1) (filter (\ v -> evl v f2) (allVals f2))
 
@@ -35,7 +35,7 @@ test1f = entails form2 form1
 
 -- | logical equivalence
 equiv :: Form -> Form -> Bool
-equiv f1 f2 = (filter (\ v -> evl v f1) (allVals f1)) == (filter (\ v -> evl v f2) (allVals f2))
+equiv f1 f2 = tautology (Equiv f1 f2)
 
 test1g = equiv form1 form1
 test1h = equiv form1 form2
@@ -98,7 +98,7 @@ test3c = toCNF form3c
 test3d = toCNF form3d
 
 
--- Exercise 4 (2 hours)
+-- Exercise 4 (3 hours)
 -- Node rules:
 -- - Prop:  Followed only by a Prop/Int.
 -- - Neg:   Followed by a subform.
@@ -192,17 +192,63 @@ testRandFormN n d p = do
 
 -- Test properties
 randTautology :: IO ()
-randTautology = testRandFormN 100 3 tautology
+randTautology = testRandFormN 100 3 (\x -> tautology x --> equiv x (Dsj [p, Neg p]))
+{--
+--- Start 100 tests!
+Passed test!
+
+Whenever we find a Form that is an tautology,
+then the Form should be equivalent to something that is always True.
+We test this by comparing the Form to a disjunction of True and False.
+--}
 
 randContradiction :: IO ()
-randContradiction = testRandFormN 100 3 contradiction
+randContradiction = testRandFormN 100 3 (\x -> contradiction x --> equiv x (Cnj [p, Neg p]))
+{--
+--- Start 100 tests!
+Passed test!
+
+Whenever we find a random Form that is a contradiction,
+it should be equivalent to a Form that is always false.
+This is done with the conjunction of True and False.
+--}
 
 randEquiv1, randEquiv2 :: IO ()
 randEquiv1 = testRandFormN 100 3 (\x -> equiv x x)
+{--
+--- Start 100 tests!
+Passed test!
+
+This test passes, so this means that each generated Form
+is equivalent to itself.
+--}
+
 randEquiv2 = testRandFormN 100 3 (\x -> equiv x $ Neg x)
+{--
+--- Start 100 tests!
+Failed test:
++(*(-5 +(1 2)) 2 (-5<=>*(3 4 5 5)))
+
+It's logical this test fails, because a Form
+is never equivalent to the negation of itself.
+--}
 
 randCNF :: IO ()
 randCNF = testRandFormN 100 3 (\x -> equiv (toCNF x) x)
+{--
+--- Start 100 tests!
+Passed test!
+
+We can conclude that the CNF function gives us a 
+Form that is equivalent to the original Form.
+--}
 
 randParse :: IO ()
 randParse = testRandFormN 100 3 parseTest
+{--
+--- Start 100 tests!
+Passed test!
+
+We can conclude that the parse function works for the 100
+randomly generated Forms.
+--}
