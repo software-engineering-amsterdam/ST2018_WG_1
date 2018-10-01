@@ -211,9 +211,9 @@ Test completed!
 
 prop3h :: Ord (a) => Set a -> Set a -> Set a -> Bool
 prop3h x y z = a == b
-where
-a = setUnion x (setIntersect y z (Set []))
-b = setIntersect (setUnion x y) (setUnion x z) (Set [])
+    where
+    a = setUnion x (setIntersect y z (Set []))
+    b = setIntersect (setUnion x y) (setUnion x z) (Set [])
 {--
 testCheck3 getRandomSet prop3h 100
 Test completed!
@@ -225,9 +225,9 @@ Test completed!
 
 prop3i :: Ord (a) => Set a -> Set a -> Set a -> Bool
 prop3i x y z = a == b
-where
-a = setIntersect x (setUnion y z) (Set [])
-b = setUnion (setIntersect x y (Set [])) (setIntersect x z (Set []))
+    where
+    a = setIntersect x (setUnion y z) (Set [])
+    b = setUnion (setIntersect x y (Set [])) (setIntersect x z (Set []))
 {--
 testCheck3 getRandomSet prop3i 100
 Test completed!
