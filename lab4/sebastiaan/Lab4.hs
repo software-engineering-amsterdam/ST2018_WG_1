@@ -74,7 +74,7 @@ import SetOrd
 type Rel a = [(a,a)]
 
 symClos :: Ord a => Rel a -> Rel a
-symClos xs = sort (xs `union` [(y,x) | (x,y) <- xs])
+symClos xs = nub $ sort (xs `union` [(y,x) | (x,y) <- xs])
 
 
 
@@ -94,3 +94,24 @@ trClos xs
     | xs /= temp = trClos temp
     | otherwise = xs
     where temp = (xs `union` concat [ concat [ ([a] @@ [b]) | a <- xs, a /= b] | b <- xs])
+
+
+{--
+ Exercise7:
+
+
+
+--}
+
+reversed :: Ord a => Rel a -> Rel a
+reversed xs = [(y,x) | (x,y) <- xs]
+
+test5 :: Ord a => Rel a -> Bool
+test5 xs = (symClos xs) == (symClos $ reversed xs)
+
+test6 :: Ord a => Rel a -> Bool
+test6 xs = (trClos xs) == (trClos $ trClos $ xs)
+
+assignment7 = do
+    quickCheck (test5 :: Rel Int -> Bool)
+    quickCheck (test6 :: Rel Int -> Bool)
