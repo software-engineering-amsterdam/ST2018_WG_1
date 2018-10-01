@@ -74,7 +74,7 @@ type Rel a = [(a,a)]
 
 symClos :: Ord a => Rel a -> Rel a
 symClos [] = []
-symClos ((x1,x2):xs) = (x1,x2):(x2,x1):(symClos(xs))
+symClos ((x1,x2):xs) = nub((x1,x2):(x2,x1):(symClos(xs)))
 
 --symClos :: Ord a => Rel a -> Rel a
 --symClos x = symClos2 x y where
@@ -89,8 +89,7 @@ infixr 5 @@
 (@@) :: Eq a => Rel a -> Rel a -> Rel a
 r @@ s = nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w]
 
-testtingz = [(1,2),(5,1)] @@ [(2,3),(8,7)]
-
+-- Transitive closure of relation, sorted and without duplicates
 trClos :: Ord a => Rel a -> Rel a
 trClos x = sort(nub(until (==(trClos2 . trClos2) x) (trClos2) x)) where
   trClos2 [] = []
@@ -99,6 +98,16 @@ trClos x = sort(nub(until (==(trClos2 . trClos2) x) (trClos2) x)) where
 
 -- ex 7
 
+-- symmetric clsure of symmetric closure is equal to symmetric clusure
+propSymEq :: Rel Int -> Bool
+propSymEq x = symClos x  == symClos(symClos x)
+test1 = quickCheck propSymEq
+
+-- length of x after symclos should be larger or equal to length of x,
+-- but smaller or equal to two times length of x
+propSymLen :: Rel Int -> Bool
+propSymLen x = (length (symClos x)) >= (length x) && (length x) <= (length (symClos x))
+test2 = quickCheck propSymLen
 
 
 
