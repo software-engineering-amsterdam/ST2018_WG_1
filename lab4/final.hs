@@ -300,9 +300,10 @@ r @@ s = nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w]
 
 -- Transitive closure of relation, sorted and without duplicates
 trClos :: Ord a => Rel a -> Rel a
-trClos x = sort(nub(until (==(trClos2 . trClos2) x) (trClos2) x)) where
-trClos2 [] = []
-trClos2 (x:xs) = (([x]) @@ xs) ++ (trClos2 xs) ++ (x:xs)
+trClos xs 
+    | xs /= temp = trClos temp
+    | otherwise = xs
+    where temp = (xs `union` concat [ concat [ ([a] @@ [b]) | a <- xs, a /= b] | b <- xs])
 
 -- exercise 7 (30 min)
 
