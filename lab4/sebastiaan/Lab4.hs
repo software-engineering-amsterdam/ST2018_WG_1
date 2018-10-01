@@ -66,8 +66,8 @@ import SetOrd
 
 {--
  Exercise5:
- 
-
+    symClos will make a rel with its reversed.
+    Time spent 30 min.
 --}
 
 
@@ -80,8 +80,7 @@ symClos xs = nub $ sort (xs `union` [(y,x) | (x,y) <- xs])
 
 {--
  Exercise6:
-
-
+    Time spent 30 min
 
 --}
 
@@ -98,9 +97,12 @@ trClos xs
 
 {--
  Exercise7:
+    The exercises can be test through running exercise7.
+    This results in a quickcheck for test5 and test6.
+    In test5 we compare if the symClos of xs is the same as the reverse of symClos of xs
+    In test6 we test if the trClos is the same as the trClos of the trClos of xs.
 
-
-
+    Time spent: 45 min
 --}
 
 reversed :: Ord a => Rel a -> Rel a
@@ -112,6 +114,6 @@ test5 xs = (symClos xs) == (symClos $ reversed xs)
 test6 :: Ord a => Rel a -> Bool
 test6 xs = (trClos xs) == (trClos $ trClos $ xs)
 
-assignment7 = do
+exercise7 = do
     quickCheck (test5 :: Rel Int -> Bool)
     quickCheck (test6 :: Rel Int -> Bool)
