@@ -73,12 +73,24 @@ import SetOrd
 
 type Rel a = [(a,a)]
 
-symClos' :: Rel a -> Rel a -> Rel a
-symClos' (Rel []) xs = xs
-symClos' x xs = result where
-    (a, b) = head x
-    result = xs ++ [(a,b),(b,a)]
-
 symClos :: Ord a => Rel a -> Rel a
-symClos a = a (Rel [])
+symClos xs = sort (xs `union` [(y,x) | (x,y) <- xs])
 
+
+
+{--
+ Exercise6:
+
+
+
+--}
+
+infixr 5 @@
+(@@) :: Eq a => Rel a -> Rel a -> Rel a
+r @@ s = nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w ]
+
+trClos :: Ord a => Rel a -> Rel a
+trClos xs 
+    | xs /= temp = trClos temp
+    | otherwise = xs
+    where temp = (xs `union` concat [ concat [ ([a] @@ [b]) | a <- xs, a /= b] | b <- xs])
