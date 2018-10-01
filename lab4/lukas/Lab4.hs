@@ -34,7 +34,7 @@ getRandomSetQC n a b = do
 getRandomListQC :: Int -> Int -> Int -> IO ([Int])
 getRandomListQC n a b = sequence (replicate n (generate (choose (a, b))))
 
--- Exercise 3 (30 min)
+-- Exercise 3 (1.5 hour)
 setIntersect :: (Ord a) => Set a -> Set a -> Set a -> Set a
 setIntersect (Set []) _ z = z
 setIntersect (Set (x:xs)) y z
@@ -51,3 +51,40 @@ test3b = do
     print s1
     print s2
     return (setIntersect s1 s2 (Set []))
+
+setUnion :: (Ord a) => Set a -> Set a -> Set a
+setUnion x y = unionSet x y
+
+test3c = setUnion s1 s2
+
+setDifference :: (Ord a) => Set a -> Set a -> Set a
+setDifference x y = f (setIntersect x y (Set [])) (setUnion x y) where
+    f (Set (x:xs)) y = f (Set xs) (deleteSet x y)
+    f (Set []) y = y
+
+test3d = setDifference s1 s2
+
+prop3a :: Ord (a) => Set a -> Set a -> Bool
+prop3a x y = (setIntersect x y (Set [])) == (setIntersect y x (Set []))
+
+prop3b :: Ord (a) => Set a -> Set a -> Bool
+prop3b x y = (setUnion x y) == (setUnion y x)
+
+prop3c :: Ord (a) => Set a -> Set a -> Bool
+prop3c x y = (setDifference x y) == (setDifference y x)
+
+prop3d :: Ord (a) => Set a -> Bool
+prop3d x = setIntersect x x (Set []) == x
+
+prop3e :: Ord (a) => Set a -> Bool
+prop3e x = setUnion x x == x
+
+prop3f :: Ord (a) => Set a -> Bool
+prop3f x = setDifference x x == Set []
+
+prop3g :: Ord (a) => Set a -> Set a -> Set a -> Bool
+prop3g x y z = setUnion (setUnion x y) z == setUnion (setUnion y z) x
+
+prop3h :: Ord (a) => Set a -> Set a -> Set a -> Bool
+prop3h x y z = setDifference (setDifference x y) z ==
+                setDifference (setDifference y z) x
