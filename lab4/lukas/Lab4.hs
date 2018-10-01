@@ -58,7 +58,7 @@ setUnion x y = unionSet x y
 test3c = setUnion s1 s2
 
 setDifference :: (Ord a) => Set a -> Set a -> Set a
-setDifference x y = f (setIntersect x y (Set [])) (setUnion x y) where
+setDifference x y = f y (setUnion x y) where
     f (Set (x:xs)) y = f (Set xs) (deleteSet x y)
     f (Set []) y = y
 
@@ -71,7 +71,7 @@ prop3b :: Ord (a) => Set a -> Set a -> Bool
 prop3b x y = (setUnion x y) == (setUnion y x)
 
 prop3c :: Ord (a) => Set a -> Set a -> Bool
-prop3c x y = (setDifference x y) == (setDifference y x)
+prop3c x y = (setDifference x y) != (setDifference y x)
 
 prop3d :: Ord (a) => Set a -> Bool
 prop3d x = setIntersect x x (Set []) == x
