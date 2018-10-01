@@ -51,32 +51,20 @@ getRandomListQC n a b = sequence (replicate n (generate (choose (a, b))))
 
 
 
--- Exercise 3: ()
+-- Exercise 3: (3:00)
 setIntersect :: Ord a => Set a -> Set a -> Set a -> Set a
 setIntersect (Set []) _ z = z
 setIntersect (Set (x:xs)) ys z
     | inSet x ys    = setIntersect (Set xs) ys (insertSet x z)
     | otherwise     = setIntersect (Set xs) ys z
 
-test3a = Set [1,2,3,4,5,6,7,8,9]
-test3b = Set [1,3,5,7,9,11,13,15,17]
-
 setUnion :: Ord a => Set a -> Set a -> Set a
 setUnion x y = unionSet x y
-
-{--
-setDifference :: Ord a => Set a -> Set a -> Set a
-setDifference (Set []) y = y
-setDifference (Set (x:xs)) y
-    | inSet x y = setDifference (Set xs) (deleteSet x y)
-    | otherwise = setDifference (Set xs) (insertSet x y)
---}
 
 setDifference :: (Ord a) => Set a -> Set a -> Set a
 setDifference x y = f y (setUnion x y) where
     f (Set (x:xs)) y = f (Set xs) (deleteSet x y)
     f (Set []) y = y
-
 
 {--
 This function checks whether a property, that requires 1 set as input, is true.
@@ -171,7 +159,7 @@ testCheck1 getRandomSetQC prop3d 100
 Test completed!
 --}
 
--- A diff A == []
+-- A diff A == {}
 prop3e :: Ord (a) => Set a -> Bool
 prop3e x = setDifference x x == Set []
 {--
@@ -193,8 +181,62 @@ testCheck3 getRandomSetQC prop3f 100
 Test completed!
 --}
 
-
--- ??????
+-- (A intersect B) intersect C == A intersect (B intersect C)
 prop3g :: Ord (a) => Set a -> Set a -> Set a -> Bool
-prop3g x y z = setDifference (setDifference x y) z ==
-                setDifference (setDifference y z) x
+prop3g x y z = setIntersect (setIntersect x y (Set [])) z (Set []) == setIntersect x (setIntersect y z (Set [])) (Set [])
+{--
+testCheck3 getRandomSet prop3g 100
+Test completed!
+
+testCheck3 getRandomSetQC prop3g 100
+Test completed!
+--}
+
+prop3h :: Ord (a) => Set a -> Set a -> Set a -> Bool
+prop3h x y z = a == b
+    where
+        a = setUnion x (setIntersect y z (Set []))
+        b = setIntersect (setUnion x y) (setUnion x z) (Set [])
+{--
+testCheck3 getRandomSet prop3h 100
+Test completed!
+
+testCheck3 getRandomSetQC prop3h 100
+Test completed!
+--}
+
+
+prop3i :: Ord (a) => Set a -> Set a -> Set a -> Bool
+prop3i x y z = a == b
+    where
+        a = setIntersect x (setUnion y z) (Set [])
+        b = setUnion (setIntersect x y (Set [])) (setIntersect x z (Set []))
+{--
+testCheck3 getRandomSet prop3i 100
+Test completed!
+
+testCheck3 getRandomSetQC prop3i 100
+Test completed!
+--}
+
+-- A union (B diff A) == A union B
+prop3j :: Ord a => Set a -> Set a -> Bool
+prop3j x y = setUnion x (setDifference y x) == setUnion x y
+{--
+testCheck2 getRandomSet prop3j 100
+Test completed!
+
+testCheck2 getRandomSetQC prop3j 100
+Test completed!
+--}
+
+-- A intersect (B diff A) = {}
+prop3k :: Ord a => Set a -> Set a -> Bool
+prop3k x y = setIntersect x (setDifference y x) (Set []) == Set []
+{--
+testCheck2 getRandomSet prop3k 100
+Test completed!
+
+testCheck2 getRandomSetQC prop3k 100
+Test completed!
+--}
