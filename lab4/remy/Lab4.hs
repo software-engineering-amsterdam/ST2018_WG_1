@@ -240,3 +240,20 @@ Test completed!
 testCheck2 getRandomSetQC prop3k 100
 Test completed!
 --}
+
+
+
+-- Exercise 5: (0:20)
+type Rel a = [(a,a)]
+
+symClos :: Ord a => Rel a -> Rel a
+symClos x = x `union` [(b,a) | (a,b) <- x]
+
+
+-- Exercise 6
+infixr 5 @@
+(@@) :: Eq a => Rel a -> Rel a -> Rel a
+r @@ s = nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w ]
+
+trClos :: Ord a => Rel a -> Rel a
+trClos x = x

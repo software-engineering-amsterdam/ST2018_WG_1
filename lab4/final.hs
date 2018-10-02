@@ -209,6 +209,7 @@ testCheck3 getRandomSetQC prop3g 100
 Test completed!
 --}
 
+-- A union (B intersect C) == (A union B) intersect (A union C)
 prop3h :: Ord (a) => Set a -> Set a -> Set a -> Bool
 prop3h x y z = a == b
     where
@@ -222,7 +223,7 @@ testCheck3 getRandomSetQC prop3h 100
 Test completed!
 --}
 
-
+-- A intersect (B union C) == (A intersect B) union (A intersect C)
 prop3i :: Ord (a) => Set a -> Set a -> Set a -> Bool
 prop3i x y z = a == b
     where
