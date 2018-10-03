@@ -209,6 +209,7 @@ testCheck3 getRandomSetQC prop3g 100
 Test completed!
 --}
 
+-- A union (B intersect C) == (A union B) intersect (A union C)
 prop3h :: Ord (a) => Set a -> Set a -> Set a -> Bool
 prop3h x y z = a == b
     where
@@ -222,7 +223,7 @@ testCheck3 getRandomSetQC prop3h 100
 Test completed!
 --}
 
-
+-- A intersect (B union C) == (A intersect B) union (A intersect C)
 prop3i :: Ord (a) => Set a -> Set a -> Set a -> Bool
 prop3i x y z = a == b
     where
@@ -300,16 +301,16 @@ r @@ s = nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w]
 
 -- Transitive closure of relation, sorted and without duplicates
 trClos :: Ord a => Rel a -> Rel a
-trClos xs 
+trClos xs
     | xs /= temp = trClos temp
     | otherwise = xs
     where temp = (xs `union` concat [ concat [ ([a] @@ [b]) | a <- xs, a /= b] | b <- xs])
 
--- exercise 7 (30 min)
+-- exercise 7 (60 min)
 
 -- symmetric clsure of symmetric closure is equal to symmetric clusure
 propSymEq :: Rel Int -> Bool
-propSymEq x = symClos x  == symClos(symClos x)
+propSymEq x = symClos x == symClos(symClos x)
 test1 = quickCheck propSymEq
 
 -- length of x after symclos should be larger or equal to length of x,
@@ -317,6 +318,28 @@ test1 = quickCheck propSymEq
 propSymLen :: Rel Int -> Bool
 propSymLen x = (length (symClos x)) >= (length x) && (length x) <= (length (symClos x))
 test2 = quickCheck propSymLen
+
+-- symClos x contains same elements as x. Used nub to remove duplicates.
+propSymContainsOldElements :: Rel Int -> Bool
+propSymContainsOldElements x = ((nub(x)) \\ (symClos (nub(x)))) == []
+test3 = quickCheck propSymContainsOldElements
+
+-- Transitive clsure of Transitive closure is equal to Transitive clusure
+propTrEq :: Rel Int -> Bool
+propTrEq x = trClos x == trClos(trClos x)
+test4 = quickCheck propTrEq
+
+-- length of x after trclos should be larger or equal to length of x,
+-- but smaller or equal to length of x times length of x
+propTrLength :: Rel Int -> Bool
+propTrLength x = (length (trClos x)) >= (length (nub(x))) && ((length (nub(x))) * (length (nub(x)))) >= (length (trClos x))
+test5 = quickCheck propTrLength
+
+-- trClos x contains same elements as x. Used nub to remove duplicates.
+propTrContainsOldElements :: Rel Int -> Bool
+propTrContainsOldElements x = ((nub(x)) \\ (trClos (nub(x)))) == []
+test6 = quickCheck propTrContainsOldElements
+
 
 -- Exercise 8 (5 min)
 

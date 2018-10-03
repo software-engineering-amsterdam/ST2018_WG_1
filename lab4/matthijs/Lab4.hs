@@ -100,7 +100,7 @@ trClos x = sort(nub(until (==(trClos2 . trClos2) x) (trClos2) x)) where
 
 -- symmetric clsure of symmetric closure is equal to symmetric clusure
 propSymEq :: Rel Int -> Bool
-propSymEq x = symClos x  == symClos(symClos x)
+propSymEq x = symClos x == symClos(symClos x)
 test1 = quickCheck propSymEq
 
 -- length of x after symclos should be larger or equal to length of x,
@@ -108,6 +108,25 @@ test1 = quickCheck propSymEq
 propSymLen :: Rel Int -> Bool
 propSymLen x = (length (symClos x)) >= (length x) && (length x) <= (length (symClos x))
 test2 = quickCheck propSymLen
+
+-- symClos x contains same elements as x. Used nub to remove duplicates.
+propSymContainsOldElements :: Rel Int -> Bool
+propSymContainsOldElements x = ((nub(x)) \\ (symClos (nub(x)))) == []
+test3 = quickCheck propSymContainsOldElements
+
+
+propTrEq :: Rel Int -> Bool
+propTrEq x = trClos x == trClos(trClos x)
+test4 = quickCheck propTrEq
+
+propTrLength :: Rel Int -> Bool
+propTrLength x = (length (trClos x)) >= (length (nub(x))) && ((length (nub(x))) * (length (nub(x)))) >= (length (trClos x))
+test5 = quickCheck propTrLength
+
+
+propTrContainsOldElements :: Rel Int -> Bool
+propTrContainsOldElements x = ((nub(x)) \\ (trClos (nub(x)))) == []
+test6 = quickCheck propTrContainsOldElements
 
 
 
