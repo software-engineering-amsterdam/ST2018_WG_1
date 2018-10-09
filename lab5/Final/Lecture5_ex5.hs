@@ -3,14 +3,8 @@ module Lecture5_ex5 where
 import Lecture5_ex2
 
 -- Exercise 5 (time spend : NON)
--- This is the same answer as to question 4 because of the constraints we added
--- in the previous exercises it is allready NRC form.
-
--- You can generate a sudoku with 3 and 4 empty blocks, 5 is only possible with NRC version
--- and 5 might not even be found in the 10 attempts.
--- Due to the extra constraints implemented in ex1 and ex2, this code generates a
--- NRC sudoku.
--- Works, but is very slow.
+-- This is the same answer as to exercise 4 but we imported exercise2 which had the NRC
+-- constraints.
 -- To run do ex4_21 3 or a amount of blocks you want to delete.
 
 eraseE :: Node -> [(Row, Column)] -> Node

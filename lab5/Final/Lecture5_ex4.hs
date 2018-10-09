@@ -1,13 +1,10 @@
 module Lecture5_ex4 where
 
-import Lecture5_ex2
+import Lecture5
 
 -- Exercise 4 (2 hours)
 -- You can generate a sudoku with 3 and 4 empty blocks, 5 is only possible with NRC version
 -- and 5 might not even be found in the set 10 tries.
--- Due to the extra constraints implemented in ex1 and ex2, this code generates a
--- NRC sudoku.
--- Works, but is very slow.
 -- To run do ex4_21 3 or a amount of blocks you want to delete.
 
 eraseE :: Node -> [(Row, Column)] -> Node
@@ -42,7 +39,7 @@ ex4_21 :: Int -> IO ()
 ex4_21 n = ex4_22 n False 0 emptyN emptyN emptyN
 
 ex4_22 :: Int -> Bool -> Int -> Node -> Node -> Node -> IO ()
-ex4_22 _ False 10 _ _ _ = do
+ex4_22 _ False 1000 _ _ _ = do
   print("No sudoku found")
 ex4_22 n False c _ _ _ = do
   print("Try")
