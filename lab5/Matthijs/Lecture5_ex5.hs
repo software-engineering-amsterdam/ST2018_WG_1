@@ -1,8 +1,8 @@
-module Lecture5_ex4 where
+module Lecture5_ex5 where
 
-import Lecture5
+import Lecture5_ex2
 
---  based on Remy's, Lukasś and Sebastiaans code
+-- based on Remy's, Lukasś and Sebastiaans code
 -- Due to the extra constraints implemented in ex1 and 2, this code generates a
 -- NRC sudoku.
 -- Works, but is very slow.
@@ -71,14 +71,15 @@ ex4 n = do
 
 -- Tries to find a suitable sudoku in 10 tries. Argument is number of
 -- empty blocks.
+-- Only differene with ex4 is that this version imports our new constraints.
 
-ex4_21 :: Int -> IO ()
-ex4_21 n = ex4_22 n False 0 emptyN emptyN emptyN
+ex5_21 :: Int -> IO ()
+ex5_21 n = ex5_22 n False 0 emptyN emptyN emptyN
 
-ex4_22 :: Int -> Bool -> Int -> Node -> Node -> Node -> IO ()
-ex4_22 _ False 10 _ _ _ = do
+ex5_22 :: Int -> Bool -> Int -> Node -> Node -> Node -> IO ()
+ex5_22 _ False 10 _ _ _ = do
   print("No sudoku found")
-ex4_22 n False c _ _ _ = do
+ex5_22 n False c _ _ _ = do
   print("Try")
   print(show c)
   print("/10")
@@ -87,8 +88,8 @@ ex4_22 n False c _ _ _ = do
   let x = eraseBs r (take n bs)
   temp <- genProblem x
   ismin <- isMinimal temp
-  ex4_22 n ismin (c+1) r x temp
-ex4_22 n True c r x temp = do
+  ex5_22 n ismin (c+1) r x temp
+ex5_22 n True c r x temp = do
   showNode r
   showNode x
   showNode temp
