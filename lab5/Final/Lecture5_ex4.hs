@@ -3,7 +3,8 @@ module Lecture5_ex4 where
 import Lecture5_ex2
 
 -- Exercise 4 (2 hours)
--- You can generate a sudoku with 3 and 4 empty blocks, 5 and up is not possible.
+-- You can generate a sudoku with 3 and 4 empty blocks, 5 is only possible with NRC version
+-- and 5 might not even be found in the set 10 tries.
 -- Due to the extra constraints implemented in ex1 and ex2, this code generates a
 -- NRC sudoku.
 -- Works, but is very slow.
