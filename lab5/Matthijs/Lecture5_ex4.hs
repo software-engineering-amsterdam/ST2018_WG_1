@@ -2,10 +2,10 @@ module Lecture5_ex4 where
 
 import Lecture5_ex2
 
---  based on Remy's, Lukasś and Sebastiaans code
 -- Due to the extra constraints implemented in ex1 and 2, this code generates a
 -- NRC sudoku.
 -- Works, but is very slow.
+-- To run do ex4_21 3 or a amount of blocks you want to delete.
 
 eraseE :: Node -> [(Row, Column)] -> Node
 eraseE n [] = n
@@ -55,19 +55,6 @@ example8 =[[0,0,0,0,0,7,0,0,0],
             [0,0,0,0,0,0,0,1,0],
             [0,0,0,0,0,0,0,4,0]]
 
-{--
-ex4 :: Int -> IO ()
-ex4 n = do
-    r <- genRandomSudoku
-    showNode r
-    bs <- randomize [0..8]
-    let x = eraseBs r (take n bs)
-    showNode x
-    temp <- genProblem x
-    showNode temp
-    ismin <- isMinimal temp
-    print(ismin)
---}
 
 -- Tries to find a suitable sudoku in 10 tries. Argument is number of
 -- empty blocks.

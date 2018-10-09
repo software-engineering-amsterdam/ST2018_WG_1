@@ -2,14 +2,11 @@ module Lecture5_ex5 where
 
 import Lecture5_ex2
 
--- Exercise 5 (NON)
+-- Exercise 5 (time spend : NON)
 -- This is the same answer as to question 4 because of the constraints we added
 -- in the previous exercises it is allready NRC form.
 
 -- You can generate a sudoku with 3 and 4 empty blocks, 5 and up is not possible.
--- But only when the empty grids are not in the same row or collum grids.
--- Because when we have two empty grids in one direction, we can change
--- the row or collum of a number between the two grids.
 -- Due to the extra constraints implemented in ex1 and ex2, this code generates a
 -- NRC sudoku.
 -- Works, but is very slow.

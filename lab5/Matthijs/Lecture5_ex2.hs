@@ -27,9 +27,8 @@ allConstrnts = rowConstrnt ++ columnConstrnt ++ blockConstrnt ++ extraConstrnt
 
 freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
 freeAtPos' s (r,c) xs = let
-  ys = filter (elem (r,c)) xs
-  in
-    foldl1 intersect (map ((values \\) . map s) ys)
+    ys = filter (elem (r,c)) xs in
+        if null ys then values else foldl1 intersect (map ((values \\) . map s) ys)
 
 
 
