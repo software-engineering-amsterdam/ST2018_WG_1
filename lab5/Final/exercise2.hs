@@ -57,7 +57,7 @@ totConstrnts = rowConstrnt ++ columnConstrnt ++ blockConstrnt ++ block2Constrnt
 freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
 freeAtPos' s (r,c) xs = let
     ys = filter (elem (r,c)) xs in
-        if null ys then values else concatMap (map ((values \\) . map s) ys)
+        if null ys then values else concatMap ((values \\) . map s) ys
 
 
 blocks :: [[Int]]
