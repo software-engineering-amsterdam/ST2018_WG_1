@@ -1,6 +1,6 @@
 module Lecture5_ex4 where
 
-import Lecture5
+import Lecture5_ex2
 
 --  based on Remy's, Lukasś and Sebastiaans code
 -- Due to the extra constraints implemented in ex1 and 2, this code generates a
