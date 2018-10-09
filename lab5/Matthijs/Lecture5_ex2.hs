@@ -1,5 +1,5 @@
 
-module Lecture5
+module Lecture5_ex2
 
 where
 
