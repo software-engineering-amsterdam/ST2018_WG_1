@@ -4,21 +4,34 @@ import Data.List
 import System.Random
 import Test.QuickCheck
 
+-- Exercise 3: (2:00)
+-- So for something to be minimal it needs to have only one solution and
+-- when a hint is removed it needs to have more than one solution.
+-- Now to test this we generate a problem with the given functions from the lecture
+-- and check for every hint that is deleted if it has more than one solution.
+-- The test can be run through ex3.
 
-checkMinimal (sudoku, con) = do
-    let hintPositions = filledPositions sudoku
-    let subSudokus = map (\x -> eraseN (sudoku, con) x) hintPositions
-    return $ all (==False) $ map (\x -> uniqueSol x ) subSudokus
+isMinimal :: Node -> IO Bool
+isMinimal (s, n) = do
+    let isUnique = uniqueSol (s, n)
+    let hints = filledPositions s
+    let subs = map (\x -> eraseN (s, n) x) hints
+    if not isUnique then
+        return False
+    else
+        return $ all (==False) $ map (\x -> uniqueSol x) subs
 
-main :: IO ()
-main = do
-          [r] <- rsolveNs [emptyN]
-          s <- genProblem r
-          showNode s
-          result <- checkMinimal s
-          print(result)
-
-
+ex3 :: IO ()
+ex3 = do
+    [r] <- rsolveNs [emptyN]
+    showNode r
+    s <- genProblem r
+    showNode s
+    min <- isMinimal s
+    if min then
+        putStrLn "TRUE: The sudoku is minimal"
+    else
+        putStrLn "FALSE: The sudoku is NOT minimal"
 
 
 ---------------------------------------------------------------------------
