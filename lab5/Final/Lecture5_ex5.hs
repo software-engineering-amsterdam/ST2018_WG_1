@@ -2,25 +2,23 @@ module Lecture5_ex5 where
 
 import Lecture5_ex2
 
--- Exercise 4 (2 hours)
--- You can generate a sudoku with 3 empty grids, but not with 4 or 5.
+-- Exercise 5 (NON)
+-- This is the same answer as to question 4 because of the constraints we added
+-- in the previous exercises it is allready NRC form.
+
+-- You can generate a sudoku with 3 and 4 empty blocks, 5 and up is not possible.
 -- But only when the empty grids are not in the same row or collum grids.
 -- Because when we have two empty grids in one direction, we can change
--- the row or collum of a number between the two grids. This can
--- be checked by removing grids, them minimizing the sudoku. Then we can
--- check if there is a signle solution by running the uniqueSol function.
-
-
-checkMinimal (sudoku, con) = do
-    let hintPositions = filledPositions sudoku
-    let subSudokus = map (\x -> eraseN (sudoku, con) x) hintPositions
-    return $ all (==False) $ map (\x -> uniqueSol x ) subSudokus
+-- the row or collum of a number between the two grids.
+-- Due to the extra constraints implemented in ex1 and ex2, this code generates a
+-- NRC sudoku.
+-- Works, but is very slow.
+-- To run do ex4_21 3 or a amount of blocks you want to delete.
 
 eraseE :: Node -> [(Row, Column)] -> Node
 eraseE n [] = n
 eraseE n (x:xs) = eraseE (eraseN n x) xs
 
--- Replaces grid b with empty grid.
 eraseB :: Node -> Integer -> Node
 eraseB n b = eraseE n bl
     where
@@ -32,15 +30,38 @@ eraseBs :: Node -> [Integer] -> Node
 eraseBs n [] = n
 eraseBs n (x:xs) = eraseBs (eraseB n x) xs
 
--- This function removes the grids listed in x and then minimalize
--- the sudoku. After that we check that this is the minimal solution.
-test4 :: [Integer] -> IO ()
-test4 x = do
-    s <- genRandomSudoku
-    showNode s
-    let sx = eraseBs s x
-    showNode sx
-    sy <- genProblem sx
-    showNode sy
-    ismin <- checkMinimal sy
-    print(ismin)
+isMinimal :: Node -> IO Bool
+isMinimal (s, n) = do
+    let isUnique = uniqueSol (s, n)
+    let hints = filledPositions s
+    let subs = map (\x -> eraseN (s, n) x) hints
+    if not isUnique then
+        return False
+    else
+        return $ all (==False) $ map (\x -> uniqueSol x) subs
+
+-- Tries to find a suitable sudoku in 10 tries. Argument is number of
+-- empty blocks.
+
+ex4_21 :: Int -> IO ()
+ex4_21 n = ex4_22 n False 0 emptyN emptyN emptyN
+
+ex4_22 :: Int -> Bool -> Int -> Node -> Node -> Node -> IO ()
+ex4_22 _ False 10 _ _ _ = do
+  print("No sudoku found")
+ex4_22 n False c _ _ _ = do
+  print("Try")
+  print(show c)
+  print("/10")
+  r <- genRandomSudoku
+  bs <- randomize [0..8]
+  let x = eraseBs r (take n bs)
+  temp <- genProblem x
+  ismin <- isMinimal temp
+  ex4_22 n ismin (c+1) r x temp
+ex4_22 n True c r x temp = do
+  showNode r
+  showNode x
+  showNode temp
+
+

@@ -7,6 +7,7 @@ import Data.List
 import System.Random
 
 
+-- Time spent : (1 hour)
 
 -- Solution given sudoku∷
 
