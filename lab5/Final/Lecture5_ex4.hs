@@ -3,8 +3,7 @@ module Lecture5_ex4 where
 import Lecture5
 
 -- Exercise 4 (2 hours)
--- You can generate a sudoku with 3 and 4 empty blocks, 5 is only possible with NRC version
--- and 5 might not even be found in the set 10 tries.
+-- You can generate a sudoku with 3 and 4 empty blocks, 5 is only possible with NRC version.
 -- To run do ex4_21 3 or a amount of blocks you want to delete.
 
 eraseE :: Node -> [(Row, Column)] -> Node
@@ -32,7 +31,7 @@ isMinimal (s, n) = do
     else
         return $ all (==False) $ map (\x -> uniqueSol x) subs
 
--- Tries to find a suitable sudoku in 10 tries. Argument is number of
+-- Tries to find a suitable sudoku in 1000 tries. Argument is number of
 -- empty blocks.
 
 ex4_21 :: Int -> IO ()
@@ -44,7 +43,7 @@ ex4_22 _ False 1000 _ _ _ = do
 ex4_22 n False c _ _ _ = do
   print("Try")
   print(show c)
-  print("/10")
+  print("/1000")
   r <- genRandomSudoku
   bs <- randomize [0..8]
   let x = eraseBs r (take n bs)

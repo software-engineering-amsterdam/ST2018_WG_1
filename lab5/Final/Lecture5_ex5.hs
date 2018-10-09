@@ -32,19 +32,19 @@ isMinimal (s, n) = do
     else
         return $ all (==False) $ map (\x -> uniqueSol x) subs
 
--- Tries to find a suitable sudoku in 10 tries. Argument is number of
+-- Tries to find a suitable sudoku in 1000 tries. Argument is number of
 -- empty blocks.
 
 ex4_21 :: Int -> IO ()
 ex4_21 n = ex4_22 n False 0 emptyN emptyN emptyN
 
 ex4_22 :: Int -> Bool -> Int -> Node -> Node -> Node -> IO ()
-ex4_22 _ False 10 _ _ _ = do
+ex4_22 _ False 1000 _ _ _ = do
   print("No sudoku found")
 ex4_22 n False c _ _ _ = do
   print("Try")
   print(show c)
-  print("/10")
+  print("/1000")
   r <- genRandomSudoku
   bs <- randomize [0..8]
   let x = eraseBs r (take n bs)
