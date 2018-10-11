@@ -111,7 +111,12 @@ expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
 exM :: Integer -> Integer -> Integer -> Integer
-exM = expM -- to be replaced by a fast version
+exM b e m = exM' (b `mod` m) e m 1
+    where
+        exM' b 0 m r = r
+        exM' b e m r
+            | even e    = exM' (b*b `mod` m) (e `div` 2) m r
+            | otherwise = exM' (b*b `mod` m) (e `div` 2) m (r*b `mod` m)
 
 primeTestF :: Integer -> IO Bool
 primeTestF n = do 
@@ -143,8 +148,9 @@ primeMR k n = do
     if exM a (n-1) n /= 1 || mrComposite a n
     then return False else primeMR (k-1) n
 
-composites :: [Integer]
-composites = error "not yet implemented"
+-- See lab6.hs
+--composites :: [Integer]
+--composites = error "not yet implemented"
 
 encodeDH :: Integer -> Integer -> Integer -> Integer
 encodeDH p k m = m*k `mod` p
