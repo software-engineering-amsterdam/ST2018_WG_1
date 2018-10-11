@@ -148,8 +148,7 @@ primeMR k n = do
     if exM a (n-1) n /= 1 || mrComposite a n
     then return False else primeMR (k-1) n
 
-composites :: [Integer]
-composites = error "not yet implemented"
+
 
 encodeDH :: Integer -> Integer -> Integer -> Integer
 encodeDH p k m = m*k `mod` p
@@ -219,6 +218,25 @@ trapdoor = rsaEncode
 secret, bound :: Integer
 secret = mers 18
 bound  = 131
+
+--ex3
+composites :: [Integer]
+composites = filter (not.prime) [4..]
+
+--ex4
+-- Least composite (From one run, differ every time)∷
+-- k=1 -> 39
+-- k=2 -> 1729
+-- k=3 -> 561
+-- Usually with a higher k, the lowest composite number which fools the test is higher.
+
+
+ex4 n = ex4_1 n composites
+
+ex4_1 n (x:xs) = do
+  res <- primeTestsF n x
+  if(res) then print x else return()
+  ex4_1 n xs
 
 --ex5
 carmichael :: [Integer]
