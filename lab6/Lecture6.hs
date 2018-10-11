@@ -1,24 +1,24 @@
 
 module Lecture6
 
-where
+where 
 
 import System.Random
 
 factorsNaive :: Integer -> [Integer]
-factorsNaive n0 = factors' n0 2 where
+factorsNaive n0 = factors' n0 2 where 
   factors' 1 _ = []
-  factors' n m
+  factors' n m 
     | n `mod` m == 0 = m : factors' (n `div` m) m
     | otherwise      =     factors' n (m+1)
 
 factors :: Integer -> [Integer]
 factors n0 = let
    ps0 = takeWhile (\ m -> m^2 <= n0) primes
- in factors' n0 ps0 where
+ in factors' n0 ps0 where 
    factors' 1 _  = []
    factors' n [] = [n]
-   factors' n (p:ps)
+   factors' n (p:ps) 
     | n `mod` p == 0 = p: factors' (n `div` p) (p:ps)
     | otherwise      =    factors' n ps
 
@@ -53,28 +53,28 @@ addM :: Integer -> Integer -> Integer -> Integer
 addM x y = rem (x+y)
 
 multM :: Integer -> Integer -> Integer -> Integer
-multM x y = rem (x*y)
+multM x y = rem (x*y) 
 
 invM :: Integer -> Integer -> Integer
-invM x n = let
+invM x n = let 
    (u,v) = fctGcd x n
    copr  = x*u + v*n == 1
-   i     = if signum u == 1 then u else u + n
- in
+   i     = if signum u == 1 then u else u + n  
+ in 
    if copr then i else error "no inverse"
 
 fGcd :: Integer -> Integer -> Integer
 fGcd a b = if b == 0 then a
                      else fGcd b (rem a b)
 
-fctGcd :: Integer -> Integer -> (Integer,Integer)
-fctGcd a b =
-  if b == 0
-  then (1,0)
-  else
-     let
+fctGcd :: Integer -> Integer -> (Integer,Integer) 
+fctGcd a b = 
+  if b == 0 
+  then (1,0) 
+  else 
+     let 
        (q,r) = quotRem a b
-       (s,t) = fctGcd b r
+       (s,t) = fctGcd b r 
      in (t, s - q*t)
 
 coprime :: Integer -> Integer -> Bool
@@ -96,7 +96,7 @@ takeT 0 (T x _) = T x []
 takeT n (T x ts) = T x (map (takeT (n-1)) ts)
 
 coprimeT :: Tree (Integer,Integer)
-coprimeT = grow f (1,1)
+coprimeT = grow f (1,1) 
 
 f :: (Integer,Integer) -> [(Integer,Integer)]
 f (n,m) = [(n+m,m),(n,n+m)]
@@ -119,7 +119,7 @@ exM b e m = exM' (b `mod` m) e m 1
             | otherwise = exM' (b*b `mod` m) (e `div` 2) m (r*b `mod` m)
 
 primeTestF :: Integer -> IO Bool
-primeTestF n = do
+primeTestF n = do 
    a <- randomRIO (2, n-1) :: IO Integer
    return (exM a (n-1) n == 1)
 
@@ -135,43 +135,45 @@ decomp n0 = decomp' (0,n0) where
 mrComposite :: Integer -> Integer -> Bool
 mrComposite x n = let
     (r,s) = decomp (n-1)
-    fs     = takeWhile (/= 1)
+    fs     = takeWhile (/= 1) 
        (map (\ j -> exM x (2^j*s) n)  [0..r])
-  in
+  in 
     exM x s n /= 1 && last fs /= (n-1)
 
 primeMR :: Int -> Integer -> IO Bool
 primeMR _ 2 = return True
 primeMR 0 _ = return True
-primeMR k n = do
+primeMR k n = do 
     a <- randomRIO (2, n-1) :: IO Integer
     if exM a (n-1) n /= 1 || mrComposite a n
     then return False else primeMR (k-1) n
 
-
+-- See lab6.hs
+--composites :: [Integer]
+--composites = error "not yet implemented"
 
 encodeDH :: Integer -> Integer -> Integer -> Integer
 encodeDH p k m = m*k `mod` p
 
 decodeDH :: Integer -> Integer -> Integer -> Integer -> Integer
-decodeDH p ga b c = let
-    gab' = exM ga ((p-1)-b) p
-  in
+decodeDH p ga b c = let 
+    gab' = exM ga ((p-1)-b) p 
+  in 
     rem (c*gab') p
 
 encode :: Integer -> Integer -> Integer -> Integer
-encode p k m = let
+encode p k m = let 
    p' = p-1
    e  = head [ x | x <- [k..], gcd x p' == 1 ]
- in
+ in 
    exM m e p
 
 decode :: Integer -> Integer -> Integer -> Integer
-decode p k m = let
+decode p k m = let 
    p' = p-1
    e  = head [ x | x <- [k..], gcd x p' == 1 ]
-   d  = invM e p'
- in
+   d  = invM e p' 
+ in 
    exM m d p
 
 cipher :: Integer -> Integer
@@ -188,7 +190,7 @@ phi p q = (p - 1) * (q - 1)
 
 select :: Integer -> Integer -> Integer
 select p q = let
-   t = phi p q
+   t = phi p q 
  in
    head [ x | x <- [3..], gcd x t == 1 ]
 
@@ -199,92 +201,23 @@ rsaPublic p q = let
     (e,p*q)
 
 rsaPrivate ::  Integer -> Integer -> (Integer,Integer)
-rsaPrivate p q = let
+rsaPrivate p q = let 
    e = select p q
-   t = phi p q
+   t = phi p q 
    d = invM e t
-  in
+  in 
    (d,p*q)
 
-rsaEncode :: (Integer,Integer) -> Integer -> Integer
+rsaEncode :: (Integer,Integer) -> Integer -> Integer 
 rsaEncode (e,n) m =  exM m e n
 
-rsaDecode :: (Integer,Integer) -> Integer -> Integer
-rsaDecode = rsaEncode
+rsaDecode :: (Integer,Integer) -> Integer -> Integer 
+rsaDecode = rsaEncode                              
 
 trapdoor :: (Integer,Integer) -> Integer -> Integer
-trapdoor = rsaEncode
+trapdoor = rsaEncode 
 
-secret, bound :: Integer
+secret, bound :: Integer                
 secret = mers 18
 bound  = 131
 
---ex3
-composites :: [Integer]
-composites = filter (not.prime) [4..]
-
---ex4
--- Least composite (From one run, differ every time)∷
--- k=1 -> 39
--- k=2 -> 1729
--- k=3 -> 561
--- Usually with a higher k, the lowest composite number which fools the test is higher.
-
-
-ex4 n = ex4_1 n composites
-
-ex4_1 n (x:xs) = do
-  res <- primeTestsF n x
-  if(res) then print x else return()
-  ex4_1 n xs
-
---ex5
-carmichael :: [Integer]
-carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
-          k <- [2..],
-          prime (6*k+1),
-          prime (12*k+1),
-          prime (18*k+1)]
-
--- Al tested Carmichael numbers test true with Fermats primality test.
--- Carmichael numbers have the property we test with Fermats little theorem,
--- namely that if p is a prime number, then for any int b, the number b^p - b
--- is an int multiple of p.
--- https://en.wikipedia.org/wiki/Carmichael_number
-
-ex5 = ex5_1 carmichael
-
-ex5_1 (x:xs) = do
-  print(x)
-  res <- primeTestsF 10 x
-  print(res)
-  ex5_1 xs
-
-
--- ex6
-
--- All tested Carmichael numbers test false with MR primality test.
--- MR weeds out (most) Carmichael numbers because it also tests for a
--- non-trivial root of unity.
--- https://cs.stackexchange.com/questions/21462/why-miller-rabin-instead-of-fermat-primality-test
-
-ex6 = ex6_1 carmichael
-
-ex6_1 (x:xs) = do
-  print(x)
-  res <- primeMR 10 x
-  print(res)
-  ex6_1 xs
-
-
--- ex6_2
-
--- Checked with list at https://en.wikipedia.org/wiki/Mersenne_prime
--- All found primes appear to be correct Mersenne primes
-
-ex6_2 = ex6_2_2 primes
-
-ex6_2_2 (x:xs) = do
-  isPrime <- primeMR 10 (2^x -1)
-  if(isPrime) then print (2^x -1) else return ()
-  ex6_2_2 xs
