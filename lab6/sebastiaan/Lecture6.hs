@@ -111,7 +111,15 @@ expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
 exM :: Integer -> Integer -> Integer -> Integer
-exM = expM -- to be replaced by a fast version
+exM b e m = exM' (b `mod` m) e m 1
+    where
+        exM' b 0 m r = r
+        exM' b e m r
+            | even e    = exM' (b*b `mod` m) (e `div` 2) m r
+            | otherwise = exM' (b*b `mod` m) (e `div` 2) m (r*b `mod` m)
+
+-- exM :: Integer -> Integer -> Integer -> Integer
+-- exM = expM -- to be replaced by a fast version
 
 primeTestF :: Integer -> IO Bool
 primeTestF n = do 
