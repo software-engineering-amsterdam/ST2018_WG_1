@@ -42,6 +42,20 @@ Lecture6> (0.38 secs, 11,734,248 bytes)
 This test shows that exM is faster and uses less bytes than expM.
 --}
 
--- Exercise 3 ()
+-- Exercise 3 (30 min)
+-- Composite numbers are positive numbers that can be divided by more
+-- numbers then only 1 and the number itself. Because of this composite
+-- numbers are all number higher then 1 that are not prime. We start with
+-- 4 because 2 and 3 are prime.
 composites :: [Integer]
-composites = error "not yet implemented"
+composites = filter (not.prime) [4..]
+
+-- Exercise 4 ()
+-- The Fermats prime test uses random numbers, below the number we
+-- want to check, to check wether the imput number is prime.
+-- The primeTestsF checks if k ammount of random nunbers below the
+-- input number confirm that the input number is prime. When k
+-- gets higher we check with more random numbers and thus the
+-- chance that a composite number is labeled as a prime number
+-- is smaller.
+
