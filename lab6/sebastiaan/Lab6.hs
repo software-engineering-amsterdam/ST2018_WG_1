@@ -12,12 +12,14 @@ import Lecture6
 carmichael :: [Integer]
 carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) | k <- [2..], prime (6*k+1), prime (12*k+1), prime (18*k+1) ]
 
+recResult :: [Integer] -> IO()
 recResult (x:xs) = do
     print(x)
     res <- primeTestsF 10 x
     print(res)
     recResult xs
 
+result :: IO()
 result = recResult carmichael
 
 
