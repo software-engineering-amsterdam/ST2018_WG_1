@@ -62,7 +62,7 @@ function requires somewhat the same time and bytes.
 composites :: [Integer]
 composites = filter (not.prime) [4..]
 
--- Exercise 4 ()
+-- Exercise 4 (2 hours)
 -- The Fermats prime test uses random numbers, below the number we
 -- want to check, to check wether the imput number is prime.
 -- The primeTestsF checks if k amount of random numbers below the
@@ -97,7 +97,7 @@ ex4 k (x:xs) = do
 
 -- This function executes function ex4 n times and returns a list of the results.
 ex4NTimes :: Int -> Int -> IO [Integer]
-ex4NTimes k n = ex4NTimes' k n composite []
+ex4NTimes k n = ex4NTimes' k n composites []
     where
         ex4NTimes' _ 0 _ r = return r
         ex4NTimes' k n l r = do
@@ -111,6 +111,8 @@ ex4Smallest k n = do
     return $ head $ sort r
 
 -- This function does all the things above and prints all interesting data.
+-- {This is the most complete function for testing, run ex4PrintAll k n 
+-- where n is amount of times}
 ex4PrintAll :: Int -> Int -> IO ()
 ex4PrintAll k n = do
     l               <- ex4NTimes k n
@@ -122,7 +124,7 @@ ex4PrintAll k n = do
               show smallest ++ "\thighest=" ++ show highest ++ "\tavg=" ++ show avg)
 
 
---ex5
+--ex5 (45 min)
 carmichael :: [Integer]
 carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
           k <- [2..],
@@ -147,7 +149,7 @@ ex5' (x:xs) = do
   ex5' xs
 
 
--- ex6
+-- ex6 (30 min)
 
 -- All tested Carmichael numbers test false with MR primality test.
 -- MR weeds out (most) Carmichael numbers because it also tests for a
@@ -165,7 +167,7 @@ ex6' (x:xs) = do
   ex6' xs
 
 
--- ex6_2
+-- ex6_2 (15 min)
 
 -- Checked with list at https://en.wikipedia.org/wiki/Mersenne_prime
 -- All found primes appear to be correct Mersenne primes
